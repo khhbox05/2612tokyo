@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>2612東京</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky day tabs (one per day) over a vertical timeline; the line colour is the JR Chuo orange */
+:root{--bg:#f2f4f6;--surface:#fff;--ink:#14202b;--mute:#5d6b78;--line:#d5dbe1;--chuo:#d9480f;--chuo-soft:#fde8dd;--stay:#e6eef7;--stay-ink:#234b7a;--warn:#b3261e;--warn-bg:#fdeceb;
+--sans:"Noto Sans TC","Hiragino Sans","PingFang TC",system-ui,sans-serif;--mono:"DM Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161d;--surface:#18222b;--ink:#e8edf1;--mute:#93a1ae;--line:#2b3844;--chuo:#ff7a3d;--chuo-soft:#3a2418;--stay:#1c2b3d;--stay-ink:#9cc3f0;--warn:#ff8a80;--warn-bg:#3a1c1b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161d;--surface:#18222b;--ink:#e8edf1;--mute:#93a1ae;--line:#2b3844;--chuo:#ff7a3d;--chuo-soft:#3a2418;--stay:#1c2b3d;--stay-ink:#9cc3f0;--warn:#ff8a80;--warn-bg:#3a1c1b;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto}
+header{padding-block:28px 12px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.12em;color:var(--chuo);text-transform:uppercase}
+h1{font-size:clamp(26px,6vw,36px);line-height:1.2;margin:6px 0 4px;text-wrap:balance}
+.sub{color:var(--mute);margin:0;font-size:14px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:720px;margin:0 auto;padding-block:8px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;border:0;background:none;color:var(--mute);font:500 14px var(--sans);padding:6px 12px;border-radius:6px;cursor:pointer;text-align:center;line-height:1.3}
+.tab b{display:block;font:500 15px var(--mono);color:inherit}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected=true]{background:var(--chuo);color:#fff}
+.tab.ref{border:1px dashed var(--line)}
+.tab.ref[aria-selected=true]{border-color:var(--chuo)}
+.tab:focus-visible{outline:2px solid var(--chuo);outline-offset:2px}
+.sep{flex:none;width:1px;background:var(--line);margin:4px 6px}
+main{padding-top:20px}
+.dayhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.dayhead h2{margin:0;font-size:22px}
+.cost{font:500 13px var(--mono);color:var(--mute)}
+ol{list-style:none;margin:0;padding:0;position:relative}
+ol::before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:var(--line)}
+li{position:relative;padding:0 0 14px 32px;min-width:0}
+li::before{content:"";position:absolute;left:2px;top:9px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--mute)}
+li.move::before{border-color:var(--chuo);background:var(--chuo)}
+li.stay::before{border-color:var(--stay-ink);background:var(--stay-ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;min-width:0}
+.move .card{border-color:var(--chuo);background:var(--chuo-soft)}
+.stay .card{background:var(--stay);border-color:transparent;color:var(--stay-ink)}
+.row1{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.name{font-weight:700;overflow-wrap:anywhere;min-width:0}
+.hours,.t,.yen{font:400 13px var(--mono);color:var(--mute);white-space:nowrap}
+.yen{color:var(--ink)}
+.stay .hours,.stay .yen{color:inherit}
+.via{display:inline-block;font:500 12px var(--sans);background:var(--chuo);color:#fff;border-radius:4px;padding:0 7px;margin-right:6px}
+.note{margin:2px 0 0;font-size:14px;color:var(--mute);overflow-wrap:anywhere}
+.move .note{color:var(--ink)}
+.stay .note{color:inherit}
+.t{color:var(--chuo);margin-right:6px}
+.total{margin-top:8px;padding:6px 14px;border-radius:8px;border:1px dashed var(--line);font-size:14px;color:var(--mute)}
+.total div{display:flex;justify-content:space-between;padding:6px 0}
+.total .sum{border-top:1px solid var(--line);margin-top:2px;color:var(--ink)}
+.total b{font:500 15px var(--mono);color:var(--ink)}
+a.map{color:inherit;text-decoration:none}
+a.map::after{content:" ↗";font-size:.8em;color:var(--chuo)}
+a.map:hover{color:var(--chuo)}
+a.map:focus-visible{outline:2px solid var(--chuo);outline-offset:2px}
+.pill{display:inline-block;font:500 12px var(--sans);border-radius:999px;padding:1px 9px;white-space:nowrap}
+.pill.today{background:var(--chuo);color:#fff}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.closed .card{border-color:var(--warn);background:var(--warn-bg)}
+.closed .name a,.closed .name{color:var(--ink)}
+.closed .note.w{color:var(--warn);font-weight:500}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:4px;vertical-align:middle}
+.tab[aria-selected=true] .dot{background:#fff}
+.tab.today b::before{content:"今 ";font:500 11px var(--sans)}
+.pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chk{flex:none;width:18px;height:18px;margin:0 8px 0 0;vertical-align:-3px;accent-color:var(--chuo);cursor:pointer}
+.done .card{opacity:.55}
+.done .name a,.done .name{text-decoration:line-through;text-decoration-color:var(--mute)}
+.pill.prog{background:var(--chuo-soft);color:var(--chuo);font-family:var(--mono)}
+h3.reg{display:flex;align-items:baseline;gap:8px;font-size:15px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3.reg span{font:400 12px var(--mono);color:var(--mute)}
+.refgrid{display:grid;gap:8px}
+.refgrid .card{display:flex;flex-direction:column}
+
+:root{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="eyebrow">2026.12.02 – 12.09 · 高雄 ⇄ 東京</div>
+<h1>2612東京</h1>
+</header>
+</div>
+<nav><div class="tabs" id="tabs" role="tablist"></div></nav>
+<div class="wrap"><main id="view" role="tabpanel"></main></div>
+<script>
+var D={"name": "行程", "days": [{"date": "12/02（水）", "items": [{"time": "", "name": "高雄機場－香港機場", "via": "國泰航空", "note": "CX447：KHH－HKG 06:55-08:35", "hours": "", "jpy": "", "ntd": "", "url": ""}, {"time": "", "name": "香港機場－成田空港二航廈", "via": "國泰航空", "note": "CX520：HKG－NRT 10:30-15:30", "hours": "", "jpy": "", "ntd": "", "url": ""}, {"time": "", "name": "空港第２ビル－新宿－高円寺", "via": "JR", "note": "成田エクスプレス36号(新宿行) 16:23-17:43、16:48-18:13／中央線快速(青梅行)", "hours": "", "jpy": "5,200", "ntd": "", "url": ""}, {"time": "", "name": "宿泊：APB高円寺", "via": "", "note": "", "hours": "", "jpy": "58,874", "ntd": "", "url": "https://maps.app.goo.gl/Ttww8CLZq7Hgwcrw9"}]}, {"date": "12/03（木）", "items": [{"time": "", "name": "高円寺－荻窪", "via": "JR", "note": "中央・総武線各停", "hours": "", "jpy": "115", "ntd": "", "url": ""}, {"time": "", "name": "大田黑公園", "via": "", "note": "楓葉銀杏", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/BtP4eAmnxsVX3tMg7"}, {"time": "", "name": "荻窪－吉祥寺", "via": "JR", "note": "中央線(高尾行)", "hours": "", "jpy": "199", "ntd": "", "url": ""}, {"time": "", "name": "LIGHT UP COFFEE", "via": "", "note": "", "hours": "09:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/LuG7CjcdUaGePXYy8"}, {"time": "", "name": "poooL", "via": "", "note": "雜貨", "hours": "12:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/2QFj2FPX7qHX3QqM9"}, {"time": "", "name": "MARKUS", "via": "", "note": "雜貨", "hours": "11:00–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/fFLG8UYFYf2HGkPd7"}, {"time": "", "name": "The Natural Shoe Store Kichijōji", "via": "", "note": "勃肯鞋", "hours": "11:00–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/ke46TCHd9kY9koHNA"}, {"time": "", "name": "吉祥寺PukuPuku", "via": "", "note": "雜貨", "hours": "11:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/WKcqVShGczEb1e5X6"}, {"time": "", "name": "金井米穀店", "via": "", "note": "飯糰", "hours": "09:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/qrcJioU9oja5Nv8NA"}, {"time": "", "name": "Cinq", "via": "", "note": "雜貨", "hours": "11:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/xK36QAf57xB2P9KL7"}, {"time": "", "name": "Tsubame Märkt", "via": "", "note": "雜貨", "hours": "11:30–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/7MTa8jqJg64AN37d8"}, {"time": "", "name": "outbound", "via": "", "note": "雜貨", "hours": "11:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Rtf8fKxa6HwsNAhq6"}, {"time": "", "name": "Vada/ヴァダアンティークス", "via": "", "note": "雜貨／營業時間待確定", "hours": "12:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/j1heCTQUjseoSsCx7"}, {"time": "", "name": "四歩", "via": "", "note": "雜貨", "hours": "11:00–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/SUnPpD2MhAXMEdq36"}, {"time": "", "name": "andoh coffee", "via": "", "note": "", "hours": "05:30–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/SNFSXYXS1LMMJ1DQ9"}, {"time": "", "name": "井の頭恩賜公園", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/mBYde8DkjymJ9Zw78"}, {"time": "", "name": "七井橋通り", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Y9vG6RAVrej8G4us5"}, {"time": "", "name": "咖啡 Sajilo", "via": "", "note": "尼泊爾餐廳", "hours": "11:30–22:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/vCmt4C2B2L9Zmc917"}, {"time": "", "name": "Coconuts Discs", "via": "", "note": "CD", "hours": "12:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/EECpSRVhJs8RrPFd8"}, {"time": "", "name": "モンベル 丸井吉祥寺店", "via": "", "note": "丸井8樓", "hours": "10:30–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/4SEQCZEoYzhxhrcL7"}, {"time": "", "name": "BEAUTY&YOUTH UNITED ARROWS", "via": "", "note": "", "hours": "10:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/VjeGH873sjAj4HUv9"}, {"time": "", "name": "HMV record shop Coppice 吉祥寺", "via": "", "note": "", "hours": "10:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/3uu8VRUktn1q9snV6"}, {"time": "", "name": "無印良品 吉祥寺ロフト", "via": "", "note": "5F", "hours": "10:30–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/wQweuaizvePCEDg7A"}, {"time": "", "name": "Aesop 吉祥寺", "via": "", "note": "", "hours": "11:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/j3PzawUVxuGDNJvK6"}, {"time": "", "name": "FREAK'S STORE アトレ吉祥寺店", "via": "", "note": "アトレ吉祥寺 本館 2F", "hours": "10:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/cD2tF6e3SzpS9ujr5"}, {"time": "", "name": "ornelemarche", "via": "", "note": "アトレ吉祥寺 本館1F 3番街", "hours": "10:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/PTTeDCSyPweACpQdA"}, {"time": "", "name": "吉祥寺－高円寺", "via": "JR", "note": "中央・総武線各停", "hours": "", "jpy": "209", "ntd": "", "url": ""}, {"time": "", "name": "宿泊：APB高円寺", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Ttww8CLZq7Hgwcrw9"}]}, {"date": "12/04（金）", "items": [{"time": "", "name": "INCredible COFFEE", "via": "", "note": "月定休", "hours": "08:30–10:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/3qpij1suiJ3ehJWt6"}, {"time": "", "name": "らぁめん山と樹", "via": "", "note": "拉麵／月定休", "hours": "11:30–15:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/eJJHA57d5zj3VvYT7"}, {"time": "", "name": "しげくに屋55ベーカリー 高円寺本店", "via": "", "note": "麵包／月火水定休", "hours": "10:00–17:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/ixiUG2hQ33gafDEv6"}, {"time": "", "name": "MOGI Folk Art", "via": "", "note": "", "hours": "12:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/HQQGPwosCxb25kXy5"}, {"time": "", "name": "COFFEE AMP THE ROASTER", "via": "", "note": "", "hours": "11:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/voUjGGUGJuvn4FCL9"}, {"time": "", "name": "Dealer Ship", "via": "", "note": "雜貨", "hours": "12:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/4hLk5J7XpEw493uE6"}, {"time": "", "name": "Recordshop Base", "via": "", "note": "CD", "hours": "12:00–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/BxYoyyeUnZWR6Ers9"}, {"time": "", "name": "Los Apson", "via": "", "note": "CD", "hours": "13:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/7sUN9XGA948DsSr36"}, {"time": "", "name": "権ノ助", "via": "", "note": "古道具", "hours": "12:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/PQkiWuToNqcgY9gMA"}, {"time": "", "name": "cotogoto", "via": "", "note": "廚房用品／雜貨", "hours": "11:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/HAkm8hMiCcMGW4ae7"}, {"time": "", "name": "OSドラッグ 高円寺店", "via": "", "note": "藥妝", "hours": "10:00–19:45", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/16Ji9rW93bNypRd96"}, {"time": "", "name": "宿泊：APB高円寺", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Ttww8CLZq7Hgwcrw9"}]}, {"date": "12/05（土）", "items": [{"time": "", "name": "高円寺－西荻窪", "via": "JR", "note": "中央・総武線各停", "hours": "", "jpy": "199", "ntd": "", "url": ""}, {"time": "", "name": "dodo coffee stand", "via": "", "note": "", "hours": "07:30–16:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/xuqVejkapDbnXnHz5"}, {"time": "", "name": "Recycle Gallery NEWS", "via": "", "note": "雜貨", "hours": "10:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/ycRoFZBdV6ekuRCB9"}, {"time": "", "name": "poubelle プベル", "via": "", "note": "雜貨／月火休", "hours": "11:00–19:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/T5uS38kfzE49sgWu7"}, {"time": "", "name": "Saten Japanese Tea", "via": "", "note": "", "hours": "10:00–22:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/wePfUhiDsSaDW1kw5"}, {"time": "", "name": "UNTIDY", "via": "", "note": "雜貨／月火休", "hours": "12:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Nf9uW3pFijtjFr3c7"}, {"time": "", "name": "生活日用雑貨店tsugumi 西荻窪店", "via": "", "note": "雜貨", "hours": "12:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/pQeKisJgA84oz3Eo9"}, {"time": "", "name": "ひぐらし古具店", "via": "", "note": "月火水休", "hours": "13:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/JYSwCbDyrSwYf9FL9"}, {"time": "", "name": "越後鶴屋 おもちや", "via": "", "note": "草莓大福", "hours": "09:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/npThBP1RjNwq9u7S9"}, {"time": "", "name": "Nagi", "via": "", "note": "雜貨／月火水木休", "hours": "12:00–17:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/cEJPrpvZVLgaMYHs9"}, {"time": "", "name": "DEEKA", "via": "", "note": "雜貨／火水休", "hours": "12:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/FLmwiN7WXHAwsaLCA"}, {"time": "", "name": "FALL", "via": "", "note": "雜貨／月火休", "hours": "13:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/NX3UAgNRhQMFqAy77"}, {"time": "", "name": "西荻窪－高円寺", "via": "JR", "note": "中央‧總武線各站停車14:00-14:08", "hours": "", "jpy": "199", "ntd": "", "url": ""}, {"time": "", "name": "Mowe Coffee Roasters", "via": "", "note": "月木定休", "hours": "12:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/P6N97dWonQDtQvVg9"}, {"time": "", "name": "宿泊：APB高円寺", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Ttww8CLZq7Hgwcrw9"}]}, {"date": "12/06（日）", "items": [{"time": "", "name": "walnuts coffee ウォルナッツコーヒー", "via": "", "note": "澳白跟極淺焙／無定休", "hours": "10:00–17:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/21abXKpBEpTp28QM6"}, {"time": "", "name": "高円寺－水道橋", "via": "JR", "note": "中央‧總武線各站停車", "hours": "", "jpy": "253", "ntd": "", "url": ""}, {"time": "", "name": "東京ドーム", "via": "", "note": "YOASOBI ASIA 10-CITY DOME & STADIUM TOUR 2026／開場14:30、開演17:00", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/dU4mqkABhBkr32gs6"}, {"time": "", "name": "水道橋－高円寺", "via": "JR", "note": "中央‧總武線各站停車", "hours": "", "jpy": "253", "ntd": "", "url": ""}, {"time": "", "name": "宿泊：APB高円寺", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Ttww8CLZq7Hgwcrw9"}]}, {"date": "12/07（月）", "items": [{"time": "", "name": "高円寺－代々木", "via": "JR", "note": "中央・総武線各停(津田沼行)", "hours": "", "jpy": "209", "ntd": "", "url": ""}, {"time": "", "name": "Brewman Tokyo", "via": "", "note": "", "hours": "12:00–16:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/hH7Regkus8VEmeGBA"}, {"time": "", "name": "代々木－渋谷", "via": "JR", "note": "山手線内回り渋谷方面行", "hours": "", "jpy": "155", "ntd": "", "url": ""}, {"time": "", "name": "BEAMS JAPAN 渋谷", "via": "", "note": "東急プラザ 渋谷 2 階", "hours": "11:00–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/5rs1AkTBZkZEBgNV6"}, {"time": "", "name": "CAMP SUPPLY STORE SHIBUYA", "via": "", "note": "渋谷パルコ 5 階", "hours": "11:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/hLrYzhNxH2UWPZjs5"}, {"time": "", "name": "mimi33 渋谷パルコ店", "via": "", "note": "渋谷パルコ 4 階", "hours": "11:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/ktEyhUHpYmf16x3v7"}, {"time": "", "name": "PUEBCO SHIBUYA PARCO", "via": "", "note": "渋谷パルコ 3 階", "hours": "11:00–21:01", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/nD9fuE5Wiv1mMbJh6"}, {"time": "", "name": "Tower Records 渋谷店", "via": "", "note": "", "hours": "11:00–22:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/SmwE4AzGn2biDJqv7"}, {"time": "", "name": "ビックカメラ 渋谷東口店", "via": "", "note": "", "hours": "10:00–22:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/8V6E599B13GzP4vi9"}, {"time": "", "name": "渋谷－新宿－高円寺", "via": "JR", "note": "山手線外回り新宿方面行／中央線快速(高尾行)", "hours": "", "jpy": "209", "ntd": "", "url": ""}, {"time": "", "name": "宿泊：APB高円寺", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Ttww8CLZq7Hgwcrw9"}]}, {"date": "12/08（火）", "items": [{"time": "", "name": "高円寺－武蔵小金井", "via": "JR", "note": "中央線(豊田行)", "hours": "", "jpy": "253", "ntd": "", "url": ""}, {"time": "", "name": "武蔵小金井駅－小金井公園西口", "via": "西武バス", "note": "武12、13 (2站台)、武21、15 (3號站台)", "hours": "", "jpy": "200", "ntd": "", "url": "https://maps.app.goo.gl/BgH1jiXpZBRejoKV9"}, {"time": "", "name": "江戶東京たてもの園", "via": "", "note": "前川國男邸、三井八郎右衛門邸", "hours": "09:30–17:30", "jpy": "400", "ntd": "", "url": "https://maps.app.goo.gl/BgH1jiXpZBRejoKV9"}, {"time": "", "name": "小金井公園西口－武蔵小金井駅", "via": "西武バス", "note": "武12、13、21、15", "hours": "", "jpy": "200", "ntd": "", "url": ""}, {"time": "", "name": "武蔵小金井－中野", "via": "JR", "note": "中央線快速(東京行)", "hours": "", "jpy": "253", "ntd": "", "url": ""}, {"time": "", "name": "calmside", "via": "", "note": "咖啡／14:00–15:00休息", "hours": "08:30–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/k7PsHehWgqniQUTV7"}, {"time": "", "name": "Vimala Indo Dining Nakano", "via": "", "note": "中野印度咖哩／15:00–17:30 休息，月定休", "hours": "11:30–22:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/mJbP3DuXCj7uf2oh6"}, {"time": "", "name": "中野ブロードウェイ", "via": "", "note": "", "hours": "10:00–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/pRQKmdAkzcqeGDpCA"}, {"time": "", "name": "奥の扉", "via": "", "note": "中野夜咖／休日待確認", "hours": "12:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/SZV4a6XDHfdng2rM6"}, {"time": "", "name": "六曜舎", "via": "", "note": "中野西式簡餐、飯堡排／土日定休", "hours": "11:30–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/TXWrj7ZP43r4mn1x5"}, {"time": "", "name": "小杉湯", "via": "", "note": "木定休", "hours": "14:00–01:30", "jpy": "600", "ntd": "", "url": "https://maps.app.goo.gl/b2bw9meiiuD3YNbg9"}, {"time": "", "name": "宿泊：APB高円寺", "via": "", "note": "", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Ttww8CLZq7Hgwcrw9"}]}, {"date": "12/09（水）", "items": [{"time": "", "name": "珈琲 あろうむ", "via": "", "note": "", "hours": "07:00–16:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/MgM9NotFBhyvAyk27"}, {"time": "", "name": "高円寺－新宿－空港第２ビル", "via": "JR", "note": "中央線 09:52-09:58／成田エクスプレス17号(成田空港行) 10:09-11:23", "hours": "", "jpy": "－", "ntd": "", "url": ""}, {"time": "11:50", "name": "成田空港二航廈－香港機場", "via": "國泰航空", "note": "CX527：NRT－HKG 14:25-18:55", "hours": "", "jpy": "", "ntd": "", "url": ""}, {"time": "", "name": "Bakehouse", "via": "", "note": "香港國際機場一號客運大樓 7E138 號舖", "hours": "06:30–23:30", "jpy": "", "ntd": "", "url": "https://share.google/G6j57xicBceasEYIl"}, {"time": "", "name": "The Pier 玉衡堂商務貴賓室", "via": "", "note": "一號客運大樓 6 樓，65號登機口", "hours": "05:30–00:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/M2wPDqWtwC7SWCqN9"}, {"time": "21:30", "name": "香港機場－高雄機場", "via": "國泰航空", "note": "CX448：HKG－KHH 21:45-23:15", "hours": "", "jpy": "", "ntd": "", "url": ""}]}], "refs": [{"title": "喫茶咖啡", "items": [{"time": "", "name": "calmside", "via": "", "note": "咖啡／14:00–15:00休息", "hours": "08:30–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/k7PsHehWgqniQUTV7", "region": "中野"}, {"time": "", "name": "奥の扉", "via": "", "note": "中野夜咖／休日待確認", "hours": "12:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/57JqgFHpDKGikNVu7", "region": "中野"}, {"time": "", "name": "Rompercicci", "via": "", "note": "中野夜咖／月休", "hours": "11:00–23:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/KFkqDbCQB1SntRiQ9", "region": "中野"}, {"time": "", "name": "不純喫茶ドープ 中野店", "via": "", "note": "中野夜咖／無定休", "hours": "12:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/QXsivMkNGyDECVrL9", "region": "中野"}, {"time": "", "name": "喫茶店 gion", "via": "", "note": "阿佐ヶ谷夜咖，拿坡里義大利麵／金土營業到0030", "hours": "09:00–23:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/8dqTD4fsXPDxd9es6", "region": "阿佐ヶ谷"}, {"time": "", "name": "珈琲亭七つ森", "via": "", "note": "夜咖／無定休", "hours": "10:30–23:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/7qcpYH8qLWDcUc127", "region": "高円寺"}, {"time": "", "name": "COFFEE コーラル", "via": "", "note": "夜咖／無定休", "hours": "11:00–22:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/CqjKR5o24A746cQ76", "region": "高円寺"}, {"time": "", "name": "City", "via": "", "note": "夜咖／木定休", "hours": "12:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/PTbKiCTRyaUZSL1S7", "region": "高円寺"}, {"time": "", "name": "Leaven", "via": "", "note": "夜咖／月火定休", "hours": "12:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/pAa6RsYQmxkDoXr99", "region": "高円寺"}, {"time": "", "name": "POEM Mano A Mano Coffee", "via": "", "note": "火定休", "hours": "09:30–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/pNnSS9R32jnFLEgN9", "region": "高円寺"}, {"time": "", "name": "COFFEE AMP THE ROASTER", "via": "", "note": "月定休", "hours": "11:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/voUjGGUGJuvn4FCL9", "region": "高円寺"}, {"time": "", "name": "INCredible COFFEE", "via": "", "note": "月定休", "hours": "08:30–10:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/3qpij1suiJ3ehJWt6", "region": "高円寺"}, {"time": "", "name": "walnuts coffee ウォルナッツコーヒー", "via": "", "note": "澳白跟極淺焙／無定休", "hours": "10:00–17:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/21abXKpBEpTp28QM6", "region": "高円寺"}, {"time": "", "name": "NEYO KOENJI", "via": "", "note": "無定休", "hours": "11:00–18:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/bC3MgoKTVWUnTCrf8", "region": "高円寺"}, {"time": "", "name": "Mowe Coffee Roasters", "via": "", "note": "月木定休", "hours": "12:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/P6N97dWonQDtQvVg9", "region": "高円寺"}, {"time": "", "name": "向陽珈琲店 Kouyou Anthology", "via": "", "note": "不定休", "hours": "11:00–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/zVQuYZfB6nFWEc5e9", "region": "高円寺"}, {"time": "", "name": "旅する喫茶", "via": "", "note": "無定休", "hours": "12:00–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/nsNox2P2zZ5KjWWz8", "region": "高円寺"}]}, {"title": "餐廳", "items": [{"time": "", "name": "中華料理 七面鳥", "via": "", "note": "中華料理／14:00–17:30休息，土定休", "hours": "11:30–19:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Pwq6vygoavfhubRY6", "region": "高円寺"}, {"time": "", "name": "中華屋 櫂ちゃん", "via": "", "note": "中華料理／無定休", "hours": "11:00–22:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/dxEpfR3bum4wW2Uq9", "region": "高円寺"}, {"time": "", "name": "肉汁饂飩屋 とこ井", "via": "", "note": "烏龍麵／15:50–17:00 休息，月定休", "hours": "11:00–20:45", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/1aWKVegzEFA5CVu68", "region": "高円寺"}, {"time": "", "name": "だしと麺 遊泳", "via": "", "note": "拉麵，需線上預約", "hours": "", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/Sq8H9xv6nPPEdUML9", "region": "中野"}, {"time": "", "name": "らぁめん山と樹", "via": "", "note": "拉麵／月定休", "hours": "11:30–15:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/eJJHA57d5zj3VvYT7", "region": "高円寺"}, {"time": "", "name": "中洲屋台長浜ラーメン初代 健太", "via": "", "note": "拉麵／月定休", "hours": "12:00–15:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/VYi41oJxsvRufoRv6", "region": "高円寺"}, {"time": "", "name": "豚骨 蒼翔", "via": "", "note": "拉麵／15:00–17:00 休息，火定休", "hours": "11:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/tLY23q1ckLNiznF39", "region": "中野"}, {"time": "", "name": "麺屋はやしまる", "via": "", "note": "拉麵／水木定休", "hours": "10:56–15:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/3o2fiZBkqFcxDLf1A", "region": "高円寺"}, {"time": "", "name": "negombo33 高円寺", "via": "", "note": "咖哩／平日16:00–17:00 休息", "hours": "11:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/3bkmdbZaYYa38nbz5", "region": "高円寺"}, {"time": "", "name": "ホールスパイスカレー青藍", "via": "", "note": "咖哩百名店，民宿旁／14:00–17:20 休息，火金定休", "hours": "11:30–19:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/uAe7oEwiJ1Ju9sbz5", "region": "高円寺"}, {"time": "", "name": "CURRY SHOP Kujira Koenji", "via": "", "note": "咖哩百名店／無定休", "hours": "11:30–20:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/c37wDiCWpR3JSF1X8", "region": "高円寺"}, {"time": "", "name": "ERICK SOUTH 高円寺", "via": "", "note": "印度咖哩百名店／無定休，14:30–17:00 休息", "hours": "11:30–21:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/xUFY8mg2q8VFDfqMA", "region": "高円寺"}, {"time": "", "name": "とりかつ たるたる 金いろ", "via": "", "note": "炸豬排／無公休，15:00－17:30 休息", "hours": "11:30–20:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/KZKZZrc6ibsAJhkZA", "region": "高円寺"}, {"time": "", "name": "onigiri momofuku 高円寺", "via": "", "note": "飯糰／日水定休", "hours": "11:00–15:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/2wDsh4ib6FyupQ5C6", "region": "高円寺"}, {"time": "", "name": "キッチン南海 高円寺店", "via": "", "note": "西式簡餐、飯堡排／水日定休", "hours": "17:00–20:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/67Tx96sj7sxuVG71A", "region": "高円寺"}, {"time": "", "name": "高円寺 焼肉ここち 本店", "via": "", "note": "燒肉／月火定休", "hours": "17:00–23:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/k8xdCfdmnAHiiKKV7", "region": "高円寺"}, {"time": "", "name": "Sakava 空き屋", "via": "", "note": "深夜居酒屋／月定休", "hours": "18:00–00:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/s8yawpps9NYnsXVu8", "region": "高円寺"}, {"time": "", "name": "キッチン南海 高円寺店", "via": "", "note": "西式簡餐、飯堡排／水日定休", "hours": "17:00–20:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/67Tx96sj7sxuVG71A", "region": "高円寺"}, {"time": "", "name": "松のや 高円寺店", "via": "", "note": "家庭餐廳／無定休", "hours": "24hrs", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/CdXKT18P179KvaVU7", "region": "高円寺"}, {"time": "", "name": "六曜舎", "via": "", "note": "中野西式簡餐、飯堡排／土日定休", "hours": "11:30–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/TXWrj7ZP43r4mn1x5", "region": "中野"}, {"time": "", "name": "Vimala Indo Dining Nakano", "via": "", "note": "中野印度咖哩／15:00–17:30 休息，月定休", "hours": "11:30–22:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/mJbP3DuXCj7uf2oh6", "region": "中野"}, {"time": "", "name": "喫茶店 gion", "via": "", "note": "阿佐ヶ谷夜咖，拿坡里義大利麵／金土營業到0030", "hours": "09:00–23:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/8dqTD4fsXPDxd9es6", "region": "阿佐ヶ谷"}, {"time": "", "name": "湯気", "via": "", "note": "西荻窪飯糰定食／日定休", "hours": "11:00–20:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/3ZwFcWXC79qQihDQ7", "region": "西荻窪"}]}, {"title": "超市", "items": [{"time": "", "name": "新鮮大売 ユータカラヤ 高円寺店", "via": "", "note": "超市", "hours": "10:00–21:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/RC3gTDn7m3qVArZW6", "region": "高円寺"}, {"time": "", "name": "オーケー 高円寺店", "via": "", "note": "超市", "hours": "08:30–21:30", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/FQUygfS9XRrJA3XBA", "region": "高円寺"}, {"time": "", "name": "西友高円寺店", "via": "", "note": "超市", "hours": "24hrs", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/F3ntQAxtbJkPrSTv9", "region": "高円寺"}]}, {"title": "錢湯", "items": [{"time": "", "name": "弁天湯", "via": "", "note": "月定休／沒有沐浴用品、コインランドリー很昭和", "hours": "15:30–01:00", "jpy": "600", "ntd": "", "url": "https://maps.app.goo.gl/Cbgv5PCsREDHjMu1A", "region": "高円寺"}, {"time": "", "name": "小杉湯", "via": "", "note": "木定休", "hours": "14:00–01:30", "jpy": "600", "ntd": "", "url": "https://maps.app.goo.gl/b2bw9meiiuD3YNbg9", "region": "高円寺"}, {"time": "", "name": "大和湯", "via": "", "note": "金定休", "hours": "15:00–23:00", "jpy": "600", "ntd": "", "url": "https://maps.app.goo.gl/gfc5E6iqNB8iGMVQ7", "region": "高円寺"}, {"time": "", "name": "上越泉", "via": "", "note": "金定休", "hours": "15:30–01:00", "jpy": "600", "ntd": "", "url": "https://maps.app.goo.gl/DdqP8UqxhP9UmmyLA", "region": "高円寺"}, {"time": "", "name": "昭和湯", "via": "", "note": "土定休", "hours": "15:00–00:30", "jpy": "600", "ntd": "", "url": "https://maps.app.goo.gl/kiD3jfQNSAcvoMXe8", "region": "中野"}]}, {"title": "備案", "items": [{"time": "", "name": "高円寺－落合", "via": "JR", "note": "中央・総武線各停(東西線経由西船橋行)", "hours": "", "jpy": "313", "ntd": "", "url": "", "region": ""}, {"time": "", "name": "Swamp acchi", "via": "", "note": "下落合／不定休，詳見IG", "hours": "07:00–17:00", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/tPLsT38GDyLFYrAD8", "region": "其他"}, {"time": "", "name": "中華そば 児ノ木", "via": "", "note": "百名店拉麵／15:00–17:30 休息，木定休", "hours": "11:00–20:45", "jpy": "", "ntd": "", "url": "https://maps.app.goo.gl/m5qN1FV9xo2f3vTT6", "region": "其他"}, {"time": "", "name": "落合－高円寺", "via": "東京メトロ", "note": "東西線(中野行)", "hours": "", "jpy": "313", "ntd": "", "url": "", "region": ""}]}], "total": "67,980"};
+var tabs=document.getElementById('tabs'),view=document.getElementById('view');
+var ids=[];var now=new Date(),todayKey=now.getFullYear()===2026?('0'+(now.getMonth()+1)).slice(-2)+'/'+('0'+now.getDate()).slice(-2):'';
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function num(s){var n=parseInt(String(s).replace(/,/g,''),10);return isNaN(n)?0:n}
+function closedOn(note,wd){
+  var re=/([月火水木金土日]+)(?:定)?休(?!息)/g,m;
+  while((m=re.exec(note||'')))if(m[1].indexOf(wd)>-1)return true;
+  return false;
+}
+var DONE={};
+try{DONE=JSON.parse(localStorage.getItem('chk2612')||'{}')||{}}catch(e){DONE={}}
+function saveDone(){try{localStorage.setItem('chk2612',JSON.stringify(DONE))}catch(e){}}
+function itemHtml(it,wd,tid){
+  var ck=!it.via&&it.name.indexOf('宿泊')!==0,key=tid+'|'+it.name,done=ck&&!!DONE[key];
+  var closed=!!wd&&!it.via&&closedOn(it.note,wd);
+  var cls=(it.name.indexOf('宿泊')===0?'stay':(it.via?'move':''))+(closed?' closed':'')+(done?' done':'');
+  var h='<li class="'+cls+'"><div class="card"><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
+  var r=[];if(it.hours)r.push('<span class="hours">'+esc(it.hours)+'</span>');
+  if(it.jpy&&it.jpy!=='－')r.push('<span class="yen">¥'+esc(it.jpy)+'</span>');
+  if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
+  h+='<span class="row1" style="gap:12px">'+r.join('')+'</span></div>';
+  if(closed)h+='<p class="note w"><span class="pill warn">當天公休</span> 這家店週'+wd+'休息，建議換時間或換店</p>';
+  if(it.note)h+='<p class="note">'+esc(it.note)+'</p>';
+  return h+'</div></li>';
+}
+D.days.forEach(function(d,i){
+  var m=d.date.match(/^(\d+\/\d+)(.*)$/);
+  var wd0=(m[2].match(/（(.)）/)||[])[1],bad=d.items.filter(function(it){return !it.via&&closedOn(it.note,wd0)}).length;
+  var key=m[1].replace(/^(\d)\//,'0$1/').replace(/\/(\d)$/,'/0$1');
+  ids.push({id:'day'+(i+1),label:'<b>'+m[1]+'</b>'+m[2].replace(/[（）]/g,'')+(bad?'<i class="dot" title="有公休"></i>':''),d:d,type:'day',wd:wd0,bad:bad,key:key});
+});
+D.refs.forEach(function(r,i){ids.push({id:'ref'+(i+1),label:r.title,d:r,type:'ref'})});
+ids.forEach(function(t,i){
+  if(t.type==='ref'&&ids[i-1].type==='day'){var s=document.createElement('span');s.className='sep';tabs.appendChild(s)}
+  var b=document.createElement('button');b.className='tab'+(t.type==='ref'?' ref':'')+(t.key&&t.key===todayKey?' today':'');b.id='tab-'+t.id;b.setAttribute('role','tab');b.innerHTML=t.label;
+  b.onclick=function(){location.hash=t.id};tabs.appendChild(b);
+});
+function show(){
+  var id=location.hash.slice(1),t=ids.filter(function(x){return x.id===id})[0]||ids.filter(function(x){return x.key&&x.key===todayKey})[0]||ids[0];
+  ids.forEach(function(x){document.getElementById('tab-'+x.id).setAttribute('aria-selected',x===t)});
+  var b=document.getElementById('tab-'+t.id);
+  tabs.scrollTo({left:b.offsetLeft-16,behavior:'smooth'});
+  var d=t.d,h='';
+  if(t.type==='day'){
+    var cost=0;d.items.forEach(function(it){if(it.name.indexOf('宿泊')!==0)cost+=num(it.jpy)});
+    h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.date)+'</h2>'+(t.key===todayKey?'<span class="pill today">今天</span>':'')+(t.bad?'<span class="pill warn">'+t.bad+' 家公休</span>':'')+'</div>'+(cost?'<span class="cost">交通與門票 ¥'+cost.toLocaleString()+'</span>':'')+'</div><ol>'+d.items.map(function(it){return itemHtml(it,t.wd,t.id)}).join('')+'</ol>';
+    if(t===ids[D.days.length-1]){
+      var stay=0,other=0;D.days.forEach(function(x){x.items.forEach(function(it){if(it.name.indexOf('宿泊')===0)stay+=num(it.jpy);else other+=num(it.jpy)})});
+      h+='<div class="total"><div><span>住宿</span><b>¥'+stay.toLocaleString()+'</b></div><div><span>交通與門票</span><b>¥'+other.toLocaleString()+'</b></div><div class="sum"><span>整趟旅程 JPY 總計</span><b>¥'+esc(D.total)+'</b></div></div>';
+    }
+  }else{
+    h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.title)+'</h2></div><span class="cost">備選清單 · '+d.items.length+' 項</span></div>';
+    var order=['高円寺','中野','阿佐ヶ谷','荻窪','西荻窪','信濃町','其他'],seen={};
+    d.items.forEach(function(it){if(it.region)seen[it.region]=1});
+    if(Object.keys(seen).length<2){h+='<ol>'+d.items.map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>'}
+    else{
+      var groups=order.filter(function(r){return seen[r]}).concat([''] );
+      groups.forEach(function(r){
+        var list=d.items.filter(function(it){return (it.region||'')===r});
+        if(!list.length)return;
+        if(r)h+='<h3 class="reg">'+esc(r)+'<span>'+list.length+' 項</span></h3>';
+        h+='<ol>'+list.map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>';
+      });
+    }
+  }
+  view.innerHTML=h;
+  prog();
+}
+function prog(){
+  var p=document.getElementById('prog');if(!p)return;
+  var all=view.querySelectorAll('.chk'),on=view.querySelectorAll('.chk:checked');
+  p.textContent=all.length?'已去 '+on.length+'/'+all.length:'';p.hidden=!all.length;
+}
+view.addEventListener('change',function(e){
+  var c=e.target;if(!c.classList||!c.classList.contains('chk'))return;
+  var k=decodeURIComponent(c.getAttribute('data-k'));
+  if(c.checked)DONE[k]=1;else delete DONE[k];
+  saveDone();c.closest('li').classList.toggle('done',c.checked);prog();
+});
+window.addEventListener('hashchange',function(){show();window.scrollTo(0,0)});
+show();
+</script>
+
+</body>
+</html>
