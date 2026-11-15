@@ -155,18 +155,7 @@ function show(){
     }
   }else{
     h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.title)+'</h2></div><span class="cost">備選清單 · '+d.items.length+' 項</span></div>';
-    var order=['高円寺','中野','阿佐ヶ谷','荻窪','西荻窪','吉祥寺','信濃町','其他'],seen={};
-    d.items.forEach(function(it){if(it.region)seen[it.region]=1});
-    if(Object.keys(seen).length<2){h+='<ol>'+d.items.map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>'}
-    else{
-      var groups=order.filter(function(r){return seen[r]}).concat([''] );
-      groups.forEach(function(r){
-        var list=d.items.filter(function(it){return (it.region||'')===r});
-        if(!list.length)return;
-        if(r)h+='<h3 class="reg">'+esc(r)+'<span>'+list.length+' 項</span></h3>';
-        h+='<ol>'+list.map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>';
-      });
-    }
+    h+='<ol>'+d.items.map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>';
   }
   view.innerHTML=h;
   prog();
