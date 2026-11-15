@@ -1,0 +1,20 @@
+{
+ "name": "2612東京",
+ "short_name": "2612東京",
+ "start_url": ".",
+ "display": "standalone",
+ "background_color": "#14202b",
+ "theme_color": "#14202b",
+ "icons": [
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "apple-touch-icon.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  }
+ ]
+}
