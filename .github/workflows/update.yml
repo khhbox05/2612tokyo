@@ -1,8 +1,6 @@
 name: Update itinerary from Google Sheet
 
 on:
-  schedule:
-    - cron: "0 */3 * * *"
   workflow_dispatch:
 
 permissions:
