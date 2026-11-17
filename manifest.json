@@ -3,8 +3,8 @@
  "short_name": "2612東京",
  "start_url": ".",
  "display": "standalone",
- "background_color": "#14202b",
- "theme_color": "#14202b",
+ "background_color": "#141010",
+ "theme_color": "#141010",
  "icons": [
   {
    "src": "icon-512.png",
