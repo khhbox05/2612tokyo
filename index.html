@@ -141,8 +141,7 @@ function itemHtml(it,wd,tid){
   var closed=!!wd&&!it.via&&closedOn(it.note,wd);
   var cls=(it.name.indexOf('宿泊')===0?'stay':(it.via?'move':''))+(closed?' closed':'')+(done?' done':'');
   var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card" '+(/^https:\/\//.test(it.url||'')?'data-u="'+esc(it.url)+'"':'')+'><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
-  var r=[];if(it.hours&&LIVE&&!closed&&!it.via){var sv=openState(it.hours,NOWMIN);if(sv==='o')r.push('<span class="st '+sv+'" data-h="'+esc(it.hours)+'">'+STX[sv]+'</span>')}
-  if(it.hours)r.push('<span class="hours">'+esc(it.hours)+'</span>');
+  var r=[];if(it.hours)r.push('<span class="hours">'+esc(it.hours)+'</span>');
   if(it.jpy&&it.jpy!=='－')r.push('<span class="yen">¥'+esc(it.jpy)+'</span>');
   if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
   h+='<span class="row1" style="gap:12px">'+r.join('')+'</span></div>';
@@ -199,8 +198,6 @@ view.addEventListener('change',function(e){
 });
 window.addEventListener('hashchange',function(){if(!show(true))window.scrollTo(0,0)});
 show(true);
-function upd(){J=jst();NOWMIN=(+J.hour)*60+(+J.minute);view.querySelectorAll('.st').forEach(function(e){var s=openState(e.getAttribute('data-h'),NOWMIN);e.style.display=s==='o'?'':'none';if(s==='o'){e.className='st o';e.textContent=STX.o}})}
-document.addEventListener('visibilitychange',function(){if(!document.hidden)upd()});setInterval(upd,60000);
 view.addEventListener('click',function(e){
   if(e.target.closest('.tg')){HIDE=!HIDE;try{localStorage.setItem('hide2612',HIDE?'1':'0')}catch(x){}show(false);return}
   if(e.target.closest('a,input,button,label'))return;
