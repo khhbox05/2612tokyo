@@ -68,8 +68,7 @@ a.map:focus-visible{outline:2px solid var(--chuo);outline-offset:2px}
 .pill{display:inline-block;font:500 12px var(--sans);border-radius:999px;padding:1px 9px;white-space:nowrap}
 .pill.today{background:var(--chuo);color:#fff}
 .pill.warn{background:var(--warn-bg);color:var(--warn)}
-.closed .card{border-color:var(--warn);background:var(--warn-bg)}
-.closed .name a,.closed .name{color:var(--ink)}
+.closed .name a,.closed .name{color:var(--mute);font-weight:400}
 .closed .note.w{color:var(--warn);font-weight:500}
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:4px;vertical-align:middle}
 .tab[aria-selected=true] .dot{background:#fff}
@@ -146,7 +145,6 @@ function itemHtml(it,wd,tid){
   if(it.jpy&&it.jpy!=='－')r.push('<span class="yen">¥'+esc(it.jpy)+'</span>');
   if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
   h+='<span class="row1" style="gap:12px">'+r.join('')+'</span></div>';
-  if(closed)h+='<p class="note w"><span class="pill warn">當天公休</span> 這家店週'+wd+'休息，建議換時間或換店</p>';
   if(it.note)h+='<p class="note">'+(it.noteUrl&&/^https:\/\//.test(it.noteUrl)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.noteUrl)+'">'+esc(it.note)+'</a>':esc(it.note))+'</p>';
   return h+'</div></li>';
 }
@@ -154,7 +152,7 @@ D.days.forEach(function(d,i){
   var m=d.date.match(/^(\d+\/\d+)(.*)$/);
   var wd0=(m[2].match(/（(.)）/)||[])[1],bad=d.items.filter(function(it){return !it.via&&closedOn(it.note,wd0)}).length;
   var key=m[1].replace(/^(\d)\//,'0$1/').replace(/\/(\d)$/,'/0$1');
-  ids.push({id:'day'+(i+1),label:'<b>'+m[1]+'</b>'+m[2].replace(/[（）]/g,'')+(bad?'<i class="dot" title="有公休"></i>':''),d:d,type:'day',wd:wd0,bad:bad,key:key});
+  ids.push({id:'day'+(i+1),label:'<b>'+m[1]+'</b>'+m[2].replace(/[（）]/g,''),d:d,type:'day',wd:wd0,bad:bad,key:key});
 });
 D.refs.forEach(function(r,i){ids.push({id:'ref'+(i+1),label:r.title,d:r,type:'ref'})});
 ids.forEach(function(t,i){
@@ -170,7 +168,7 @@ function show(auto){
   var d=t.d,h='';J=jst();NOWMIN=(+J.hour)*60+(+J.minute);LIVE=t.type==='day'&&t.key===todayKey;
   if(t.type==='day'){
     var cost=0;d.items.forEach(function(it){if(it.name.indexOf('宿泊')!==0)cost+=num(it.jpy)});
-    h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.date)+'</h2>'+(t.key===todayKey?'<span class="pill today">今天</span>':'')+(t.bad?'<span class="pill warn">'+t.bad+' 家公休</span>':'')+'</div><span class="rt">'+(cost?'<span class="cost">交通與門票 ¥'+cost.toLocaleString()+'</span>':'')+tgBtn()+'</span></div>'+bar(false)+'<ol>'+d.items.map(function(it){return itemHtml(it,t.wd,t.id)}).join('')+'</ol>';
+    h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.date)+'</h2>'+(t.key===todayKey?'<span class="pill today">今天</span>':'')+'</div><span class="rt">'+(cost?'<span class="cost">交通與門票 ¥'+cost.toLocaleString()+'</span>':'')+tgBtn()+'</span></div>'+bar(false)+'<ol>'+d.items.map(function(it){return itemHtml(it,t.wd,t.id)}).join('')+'</ol>';
     if(t===ids[D.days.length-1]){
       var stay=0,other=0;D.days.forEach(function(x){x.items.forEach(function(it){if(it.name.indexOf('宿泊')===0)stay+=num(it.jpy);else other+=num(it.jpy)})});
       h+='<div class="total"><div><span>住宿</span><b>¥'+stay.toLocaleString()+'</b></div><div><span>交通與門票</span><b>¥'+other.toLocaleString()+'</b></div><div class="sum"><span>整趟旅程 JPY 總計</span><b>¥'+esc(D.total)+'</b></div></div>';
