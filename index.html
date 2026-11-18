@@ -93,7 +93,7 @@ li{scroll-margin-top:calc(76px + env(safe-area-inset-top,0px))}
 .bar{display:flex;gap:8px;align-items:center;margin:-4px 0 14px}
 .sr{flex:1;min-width:0;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:16px var(--sans)}
 .sr:focus{outline:2px solid var(--chuo);outline-offset:1px}
-.tg{margin-left:auto;flex:none;background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:5px 12px;font:500 13px var(--sans);cursor:pointer}
+.tg{flex:none;background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:0 10px;font:500 12px/22px var(--sans);cursor:pointer}
 .tg[aria-pressed=true]{border-color:var(--chuo);color:var(--chuo-ink)}
 li.gone,li.nf{display:none}
 .st{font:500 12px var(--sans);border-radius:999px;padding:0 8px;white-space:nowrap;background:var(--line);color:var(--mute)}
@@ -123,7 +123,8 @@ function openState(hr,mins){
   if(e>s)open=mins>=s&&mins<e;else open=mins>=s||mins<e;
   return open?'o':(e>s&&mins<s?'b':'c');
 }
-function bar(s){return '<div class="bar">'+(s?'<input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋">':'')+'<button class="tg" type="button" aria-pressed="'+HIDE+'">'+(HIDE?'顯示全部':'隱藏已勾')+'</button></div>'}
+function tgBtn(){return '<button class="tg" type="button" aria-pressed="'+HIDE+'">'+(HIDE?'顯示全部':'隱藏已勾')+'</button>'}
+function bar(s){return s?'<div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋">'+tgBtn()+'</div>':''}
 function fade(){var l=tabs.scrollLeft>4,r=tabs.scrollLeft<tabs.scrollWidth-tabs.clientWidth-4;tabs.style.setProperty('--ml',l?'28px':'0px');tabs.style.setProperty('--mr',r?'28px':'0px')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function num(s){var n=parseInt(String(s).replace(/,/g,''),10);return isNaN(n)?0:n}
@@ -168,7 +169,7 @@ function show(auto){
   var d=t.d,h='';J=jst();NOWMIN=(+J.hour)*60+(+J.minute);LIVE=t.type==='day'&&t.key===todayKey;
   if(t.type==='day'){
     var cost=0;d.items.forEach(function(it){if(it.name.indexOf('宿泊')!==0)cost+=num(it.jpy)});
-    h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.date)+'</h2>'+(t.key===todayKey?'<span class="pill today">今天</span>':'')+(t.bad?'<span class="pill warn">'+t.bad+' 家公休</span>':'')+'</div>'+(cost?'<span class="cost">交通與門票 ¥'+cost.toLocaleString()+'</span>':'')+'</div>'+bar(false)+'<ol>'+d.items.map(function(it){return itemHtml(it,t.wd,t.id)}).join('')+'</ol>';
+    h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.date)+'</h2>'+(t.key===todayKey?'<span class="pill today">今天</span>':'')+(t.bad?'<span class="pill warn">'+t.bad+' 家公休</span>':'')+tgBtn()+'</div>'+(cost?'<span class="cost">交通與門票 ¥'+cost.toLocaleString()+'</span>':'')+'</div>'+bar(false)+'<ol>'+d.items.map(function(it){return itemHtml(it,t.wd,t.id)}).join('')+'</ol>';
     if(t===ids[D.days.length-1]){
       var stay=0,other=0;D.days.forEach(function(x){x.items.forEach(function(it){if(it.name.indexOf('宿泊')===0)stay+=num(it.jpy);else other+=num(it.jpy)})});
       h+='<div class="total"><div><span>住宿</span><b>¥'+stay.toLocaleString()+'</b></div><div><span>交通與門票</span><b>¥'+other.toLocaleString()+'</b></div><div class="sum"><span>整趟旅程 JPY 總計</span><b>¥'+esc(D.total)+'</b></div></div>';
