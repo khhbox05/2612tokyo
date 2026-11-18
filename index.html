@@ -173,5 +173,6 @@ window.addEventListener('hashchange',function(){show();window.scrollTo(0,0)});
 show();
 </script>
 
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
 </body>
 </html>
