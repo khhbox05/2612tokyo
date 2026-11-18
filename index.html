@@ -91,6 +91,10 @@ img{max-width:100%}
 li{scroll-margin-top:calc(76px + env(safe-area-inset-top,0px))}
 .tabs{-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--ml,0px),#000 calc(100% - var(--mr,0px)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--ml,0px),#000 calc(100% - var(--mr,0px)),transparent)}
 .rt{display:flex;gap:10px;align-items:center}
+.dp{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px}
+.dp::-webkit-scrollbar{display:none}
+.dp button{flex:none;border:1px solid var(--line);background:none;color:var(--mute);border-radius:999px;padding:0 10px;font:500 12px/24px var(--mono);cursor:pointer}
+.dp button[aria-pressed=true]{border-color:var(--chuo);color:var(--chuo-ink);background:var(--chuo-soft)}
 .bar{display:flex;gap:8px;align-items:center;margin:-4px 0 14px}
 .sr{flex:1;min-width:0;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:16px var(--sans)}
 .sr:focus{outline:2px solid var(--chuo);outline-offset:1px}
@@ -125,7 +129,20 @@ function openState(hr,mins){
   return open?'o':(e>s&&mins<s?'b':'c');
 }
 function tgBtn(){return '<button class="tg" type="button" aria-pressed="'+HIDE+'">'+(HIDE?'隱藏已勾':'顯示全部')+'</button>'}
-function bar(s){return s?'<div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋">'+tgBtn()+'</div>':''}
+var REFDAY=null;
+function dayList(){return ids.filter(function(z){return z.type==='day'})}
+function refDay(){
+  if(REFDAY===null){var s=null;try{s=localStorage.getItem('refday2612')}catch(e){}
+    REFDAY=s===null?todayKey:s;
+    if(!dayList().some(function(z){return z.key===REFDAY}))REFDAY='';}
+  return REFDAY;
+}
+function refWd(){var x=dayList().filter(function(z){return z.key===refDay()})[0];return x?x.wd:null}
+function bar(s){
+  if(!s)return '';
+  var cur=refDay();
+  return '<div class="dp" role="group" aria-label="選擇日期，標出當天公休的店">'+dayList().map(function(z){return '<button type="button" data-d="'+z.key+'" aria-pressed="'+(z.key===cur)+'">'+z.key.replace(/^0/,'').replace(/\/0/,'/')+' '+z.wd+'</button>'}).join('')+'</div><div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋">'+tgBtn()+'</div>';
+}
 function fade(){var l=tabs.scrollLeft>4,r=tabs.scrollLeft<tabs.scrollWidth-tabs.clientWidth-4;tabs.style.setProperty('--ml',l?'28px':'0px');tabs.style.setProperty('--mr',r?'28px':'0px')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function num(s){var n=parseInt(String(s).replace(/,/g,''),10);return isNaN(n)?0:n}
@@ -176,7 +193,7 @@ function show(auto){
     }
   }else{
     h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.title)+'</h2></div><span class="cost">備選清單 · '+d.items.length+' 項</span></div>';
-    h+=bar(true)+'<ol>'+d.items.map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>';
+    h+=bar(true)+'<ol>'+d.items.map(function(it){return itemHtml(it,refWd(),t.id)}).join('')+'</ol>';
   }
   view.innerHTML=h;
   prog();
@@ -199,6 +216,8 @@ view.addEventListener('change',function(e){
 window.addEventListener('hashchange',function(){if(!show(true))window.scrollTo(0,0)});
 show(true);
 view.addEventListener('click',function(e){
+  var dpb=e.target.closest('.dp button');
+  if(dpb){var k=dpb.getAttribute('data-d');REFDAY=REFDAY===k?'':k;try{localStorage.setItem('refday2612',REFDAY)}catch(x){}show(false);return}
   if(e.target.closest('.tg')){HIDE=!HIDE;try{localStorage.setItem('hide2612',HIDE?'1':'0')}catch(x){}show(false);return}
 });
 view.addEventListener('input',function(e){var s=e.target;if(!s.classList||!s.classList.contains('sr'))return;var q=s.value.trim().toLowerCase();view.querySelectorAll('li').forEach(function(li){li.classList.toggle('nf',!!q&&li.textContent.toLowerCase().indexOf(q)<0)})});
