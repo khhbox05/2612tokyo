@@ -191,7 +191,7 @@ function show(auto){
     }
   }else{
     h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.title)+'</h2></div><span class="cost">備選清單 · '+d.items.length+' 項</span></div>';
-    h+=bar(true)+'<ol>'+d.items.map(function(it){return itemHtml(it,refWd(),t.id)}).join('')+'</ol>';
+    h+=bar(true)+'<ol>'+d.items.filter(function(it){var w=refWd();return !(w&&!it.via&&closedOn(it.note,w))}).map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>';
   }
   view.innerHTML=h;
   prog();
