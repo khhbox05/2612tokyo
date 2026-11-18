@@ -124,7 +124,7 @@ function openState(hr,mins){
   if(e>s)open=mins>=s&&mins<e;else open=mins>=s||mins<e;
   return open?'o':(e>s&&mins<s?'b':'c');
 }
-function tgBtn(){return '<button class="tg" type="button" aria-pressed="'+HIDE+'">'+(HIDE?'✓ 隱藏已勾':'隱藏已勾')+'</button>'}
+function tgBtn(){return '<button class="tg" type="button" aria-pressed="'+HIDE+'">'+(HIDE?'隱藏已勾':'顯示全部')+'</button>'}
 function bar(s){return s?'<div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋">'+tgBtn()+'</div>':''}
 function fade(){var l=tabs.scrollLeft>4,r=tabs.scrollLeft<tabs.scrollWidth-tabs.clientWidth-4;tabs.style.setProperty('--ml',l?'28px':'0px');tabs.style.setProperty('--mr',r?'28px':'0px')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
