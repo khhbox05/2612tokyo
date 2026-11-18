@@ -140,7 +140,7 @@ function refWd(){return refDay()||null}
 function bar(s){
   if(!s)return '';
   var cur=refDay();
-  return '<div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋"><select class="ds" aria-label="隱藏當天公休的店"><option value="">選曜日</option>'+WDS.split('').map(function(w){return '<option value="'+w+'"'+(w===cur?' selected':'')+'>'+w+'曜日</option>'}).join('')+'</select>'+tgBtn()+'</div>';
+  return '<div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋"><select class="ds" aria-label="隱藏當天公休的店"><option value="">曜日</option>'+WDS.split('').map(function(w){return '<option value="'+w+'"'+(w===cur?' selected':'')+'>'+w+'曜日</option>'}).join('')+'</select>'+tgBtn()+'</div>';
 }
 function fade(){var l=tabs.scrollLeft>4,r=tabs.scrollLeft<tabs.scrollWidth-tabs.clientWidth-4;tabs.style.setProperty('--ml',l?'28px':'0px');tabs.style.setProperty('--mr',r?'28px':'0px')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
