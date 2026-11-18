@@ -127,19 +127,20 @@ function openState(hr,mins){
   return open?'o':(e>s&&mins<s?'b':'c');
 }
 function tgBtn(){return '<button class="tg" type="button" aria-pressed="'+HIDE+'">'+(HIDE?'隱藏已勾':'顯示全部')+'</button>'}
-var REFDAY=null;
+var REFDAY=null,WDS='月火水木金土日';
 function dayList(){return ids.filter(function(z){return z.type==='day'})}
 function refDay(){
   if(REFDAY===null){var s=null;try{s=localStorage.getItem('refday2612')}catch(e){}
-    REFDAY=s===null?todayKey:s;
-    if(!dayList().some(function(z){return z.key===REFDAY}))REFDAY='';}
+    var td=dayList().filter(function(z){return z.key===todayKey})[0];
+    REFDAY=s===null?(td?td.wd:''):s;
+    if(REFDAY!==''&&!(REFDAY.length===1&&WDS.indexOf(REFDAY)>-1))REFDAY=td?td.wd:'';}
   return REFDAY;
 }
-function refWd(){var x=dayList().filter(function(z){return z.key===refDay()})[0];return x?x.wd:null}
+function refWd(){return refDay()||null}
 function bar(s){
   if(!s)return '';
   var cur=refDay();
-  return '<div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋"><select class="ds" aria-label="標出當天公休的店"><option value="">選日期</option>'+dayList().map(function(z){return '<option value="'+z.key+'"'+(z.key===cur?' selected':'')+'>'+z.key.replace(/^0/,'').replace(/\/0/,'/')+' '+z.wd+'</option>'}).join('')+'</select>'+tgBtn()+'</div>';
+  return '<div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋"><select class="ds" aria-label="隱藏當天公休的店"><option value="">選星期</option>'+WDS.split('').map(function(w){return '<option value="'+w+'"'+(w===cur?' selected':'')+'>週'+w+'</option>'}).join('')+'</select>'+tgBtn()+'</div>';
 }
 function fade(){var l=tabs.scrollLeft>4,r=tabs.scrollLeft<tabs.scrollWidth-tabs.clientWidth-4;tabs.style.setProperty('--ml',l?'28px':'0px');tabs.style.setProperty('--mr',r?'28px':'0px')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
