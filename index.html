@@ -57,6 +57,7 @@ li.stay::before{border-color:var(--stay-ink);background:var(--stay-ink)}
 .move .note{color:var(--ink)}
 .stay .note{color:inherit}
 .t{color:var(--chuo-ink);margin-right:6px}
+.via.off{background:var(--line);color:var(--ink)}
 .total{margin-top:8px;padding:6px 14px;border-radius:8px;border:1px dashed var(--line);font-size:14px;color:var(--mute)}
 .total div{display:flex;justify-content:space-between;padding:6px 0}
 .total .sum{border-top:1px solid var(--line);margin-top:2px;color:var(--ink)}
@@ -140,7 +141,7 @@ function itemHtml(it,wd,tid){
   var ck=!it.via&&it.name.indexOf('宿泊')!==0,key=tid+'|'+it.name,done=ck&&!!DONE[key];
   var closed=!!wd&&!it.via&&closedOn(it.note,wd);
   var cls=(it.name.indexOf('宿泊')===0?'stay':(it.via?'move':''))+(closed?' closed':'')+(done?' done':'');
-  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card"><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
+  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card"><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(closed?'<span class="via off">公休</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
   var r=[];if(it.hours)r.push('<span class="hours">'+esc(it.hours)+'</span>');
   if(it.jpy&&it.jpy!=='－')r.push('<span class="yen">¥'+esc(it.jpy)+'</span>');
   if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
