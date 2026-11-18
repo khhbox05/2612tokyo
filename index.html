@@ -91,11 +91,9 @@ img{max-width:100%}
 li{scroll-margin-top:calc(76px + env(safe-area-inset-top,0px))}
 .tabs{-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--ml,0px),#000 calc(100% - var(--mr,0px)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--ml,0px),#000 calc(100% - var(--mr,0px)),transparent)}
 .rt{display:flex;gap:10px;align-items:center}
-.dp{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px}
-.dp::-webkit-scrollbar{display:none}
-.dp button{flex:none;border:1px solid var(--line);background:none;color:var(--mute);border-radius:999px;padding:0 10px;font:500 12px/24px var(--mono);cursor:pointer}
-.dp button[aria-pressed=true]{border-color:var(--chuo);color:var(--chuo-ink);background:var(--chuo-soft)}
 .bar{display:flex;gap:8px;align-items:center;margin:-4px 0 14px}
+.ds{flex:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 6px;font:16px var(--sans);max-width:112px}
+.ds:focus{outline:2px solid var(--chuo);outline-offset:1px}
 .sr{flex:1;min-width:0;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:16px var(--sans)}
 .sr:focus{outline:2px solid var(--chuo);outline-offset:1px}
 .tg{flex:none;background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:0 10px;font:500 12px/22px var(--sans);cursor:pointer}
@@ -141,7 +139,7 @@ function refWd(){var x=dayList().filter(function(z){return z.key===refDay()})[0]
 function bar(s){
   if(!s)return '';
   var cur=refDay();
-  return '<div class="dp" role="group" aria-label="選擇日期，標出當天公休的店">'+dayList().map(function(z){return '<button type="button" data-d="'+z.key+'" aria-pressed="'+(z.key===cur)+'">'+z.key.replace(/^0/,'').replace(/\/0/,'/')+' '+z.wd+'</button>'}).join('')+'</div><div class="bar"><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋">'+tgBtn()+'</div>';
+  return '<div class="bar"><select class="ds" aria-label="標出當天公休的店"><option value="">選日期</option>'+dayList().map(function(z){return '<option value="'+z.key+'"'+(z.key===cur?' selected':'')+'>'+z.key.replace(/^0/,'').replace(/\/0/,'/')+' '+z.wd+'</option>'}).join('')+'</select><input class="sr" type="search" placeholder="搜尋店名或說明" aria-label="搜尋">'+tgBtn()+'</div>';
 }
 function fade(){var l=tabs.scrollLeft>4,r=tabs.scrollLeft<tabs.scrollWidth-tabs.clientWidth-4;tabs.style.setProperty('--ml',l?'28px':'0px');tabs.style.setProperty('--mr',r?'28px':'0px')}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -216,10 +214,9 @@ view.addEventListener('change',function(e){
 window.addEventListener('hashchange',function(){if(!show(true))window.scrollTo(0,0)});
 show(true);
 view.addEventListener('click',function(e){
-  var dpb=e.target.closest('.dp button');
-  if(dpb){var k=dpb.getAttribute('data-d');REFDAY=REFDAY===k?'':k;try{localStorage.setItem('refday2612',REFDAY)}catch(x){}show(false);return}
   if(e.target.closest('.tg')){HIDE=!HIDE;try{localStorage.setItem('hide2612',HIDE?'1':'0')}catch(x){}show(false);return}
 });
+view.addEventListener('change',function(e){var s=e.target;if(!s.classList||!s.classList.contains('ds'))return;REFDAY=s.value;try{localStorage.setItem('refday2612',REFDAY)}catch(x){}show(false)});
 view.addEventListener('input',function(e){var s=e.target;if(!s.classList||!s.classList.contains('sr'))return;var q=s.value.trim().toLowerCase();view.querySelectorAll('li').forEach(function(li){li.classList.toggle('nf',!!q&&li.textContent.toLowerCase().indexOf(q)<0)})});
 tabs.addEventListener('scroll',fade);window.addEventListener('resize',fade);window.addEventListener('load',fade);fade();
 </script>
