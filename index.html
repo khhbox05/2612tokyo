@@ -96,7 +96,6 @@ li{scroll-margin-top:calc(76px + env(safe-area-inset-top,0px))}
 .tg{margin-left:auto;flex:none;background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:5px 12px;font:500 13px var(--sans);cursor:pointer}
 .tg[aria-pressed=true]{border-color:var(--chuo);color:var(--chuo-ink)}
 li.gone,li.nf{display:none}
-.card[data-u]{cursor:pointer}
 .st{font:500 12px var(--sans);border-radius:999px;padding:0 8px;white-space:nowrap;background:var(--line);color:var(--mute)}
 .st.o{background:var(--ok-bg);color:var(--ok)}
 </style>
@@ -140,7 +139,7 @@ function itemHtml(it,wd,tid){
   var ck=!it.via&&it.name.indexOf('宿泊')!==0,key=tid+'|'+it.name,done=ck&&!!DONE[key];
   var closed=!!wd&&!it.via&&closedOn(it.note,wd);
   var cls=(it.name.indexOf('宿泊')===0?'stay':(it.via?'move':''))+(closed?' closed':'')+(done?' done':'');
-  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card" '+(/^https:\/\//.test(it.url||'')?'data-u="'+esc(it.url)+'"':'')+'><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
+  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card"><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
   var r=[];if(it.hours)r.push('<span class="hours">'+esc(it.hours)+'</span>');
   if(it.jpy&&it.jpy!=='－')r.push('<span class="yen">¥'+esc(it.jpy)+'</span>');
   if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
@@ -200,9 +199,6 @@ window.addEventListener('hashchange',function(){if(!show(true))window.scrollTo(0
 show(true);
 view.addEventListener('click',function(e){
   if(e.target.closest('.tg')){HIDE=!HIDE;try{localStorage.setItem('hide2612',HIDE?'1':'0')}catch(x){}show(false);return}
-  if(e.target.closest('a,input,button,label'))return;
-  if(window.getSelection&&String(window.getSelection()))return;
-  var c=e.target.closest('.card[data-u]');if(c)window.open(c.getAttribute('data-u'),'_blank','noopener');
 });
 view.addEventListener('input',function(e){var s=e.target;if(!s.classList||!s.classList.contains('sr'))return;var q=s.value.trim().toLowerCase();view.querySelectorAll('li').forEach(function(li){li.classList.toggle('nf',!!q&&li.textContent.toLowerCase().indexOf(q)<0)})});
 tabs.addEventListener('scroll',fade);window.addEventListener('resize',fade);window.addEventListener('load',fade);fade();
