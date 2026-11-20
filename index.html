@@ -128,10 +128,10 @@ body.lock{overflow:hidden}
 .sp2[hidden]{display:none}
 .se{margin:0;color:var(--warn);font-size:13px}
 .se:empty{display:none}
-.sum3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}
+.sum3{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 12px}
 .sum3 div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column}
 .sum3 span{font-size:12px;color:var(--mute)}
-.sum3 b{font:500 16px var(--mono)}
+.sum3 b{font:500 14px var(--mono)}
 .xr{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:6px;color:var(--ink);font:inherit;cursor:pointer}
 .xr small{display:block;color:var(--mute);font-size:12px}
 .xr b{font:500 15px var(--mono)}
@@ -192,7 +192,7 @@ function saveDone(){try{localStorage.setItem('chk2612',JSON.stringify(DONE))}cat
 var EXP=[];
 try{EXP=JSON.parse(localStorage.getItem('exp2612')||'[]')||[]}catch(e){EXP=[]}
 function saveExp(){try{localStorage.setItem('exp2612',JSON.stringify(EXP))}catch(e){}}
-var CURDAY='',MTX={cash:'現金',card:'信用卡'};
+var CURDAY='',MTX={cash:'現金',card:'信用卡',suica:'Suica'};
 function yen(n){return '¥'+Number(n).toLocaleString()}
 function shopTotal(name){var s=0;EXP.forEach(function(x){if(x.shop===name)s+=x.amt});return s}
 function expBtn(name){var s=shopTotal(name);if(!s)return '';return '<button type="button" class="eb'+(s?' has':'')+'" data-s="'+encodeURIComponent(name)+'" aria-label="記帳：'+esc(name)+'">'+(s?yen(s):'¥')+'</button>'}
@@ -207,7 +207,7 @@ function closeSheet(){if(SH)SH.hidden=true;document.body.classList.remove('lock'
 function sheet(){
   if(SH)return SH;
   SH=document.createElement('div');SH.id='sheet';SH.hidden=true;
-  SH.innerHTML='<div class="sbk"></div><form class="sp" autocomplete="off"><h3 class="st"></h3><label class="sl">金額（日圓）<input class="sa" type="text" inputmode="numeric" placeholder="0" aria-label="金額"></label><div class="sm" role="group" aria-label="付款方式"><button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button></div><label class="sl">時間（日本時間）<input class="sdt" type="datetime-local"></label><input class="sn" type="text" aria-label="備註"><button type="button" class="sp2" hidden>＋ 再記一筆（同一家店）</button><p class="se" role="alert"></p><div class="sb"><button type="button" class="sx">取消</button><button type="button" class="sd">刪除</button><button type="submit" class="ss">儲存</button></div></form>';
+  SH.innerHTML='<div class="sbk"></div><form class="sp" autocomplete="off"><h3 class="st"></h3><label class="sl">金額（日圓）<input class="sa" type="text" inputmode="numeric" placeholder="0" aria-label="金額"></label><div class="sm" role="group" aria-label="付款方式"><button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button><button type="button" data-m="suica">Suica</button></div><label class="sl">時間（日本時間）<input class="sdt" type="datetime-local"></label><input class="sn" type="text" aria-label="備註"><button type="button" class="sp2" hidden>＋ 再記一筆（同一家店）</button><p class="se" role="alert"></p><div class="sb"><button type="button" class="sx">取消</button><button type="button" class="sd">刪除</button><button type="submit" class="ss">儲存</button></div></form>';
   document.body.appendChild(SH);
   SH.querySelector('.sbk').onclick=closeSheet;SH.querySelector('.sx').onclick=closeSheet;
   SH.querySelector('.sm').onclick=function(e){var b=e.target.closest('button');if(!b)return;SHST.m=b.getAttribute('data-m');paintM()};
@@ -244,22 +244,22 @@ function openSheet(o){
   setTimeout(function(){s.querySelector('.sa').focus()},50);
 }
 function expHtml(){
-  var tot=0,cash=0,card=0;EXP.forEach(function(x){tot+=x.amt;if(x.m==='card')card+=x.amt;else cash+=x.amt});
+  var tot=0,cash=0,card=0,sui=0;EXP.forEach(function(x){if(x.m==='suica'){sui+=x.amt;return}tot+=x.amt;if(x.m==='card')card+=x.amt;else cash+=x.amt});
   var h='<div class="dayhead"><div class="pills"><h2>記帳</h2></div><span class="rt"><span class="cost">日圓 JPY</span><button type="button" class="tg" id="cpx">複製紀錄</button></span></div>';
-  h+='<div class="sum3"><div><span>合計</span><b>'+yen(tot)+'</b></div><div><span>現金</span><b>'+yen(cash)+'</b></div><div><span>信用卡</span><b>'+yen(card)+'</b></div></div>';
+  h+='<div class="sum3"><div><span>合計</span><b>'+yen(tot)+'</b></div><div><span>現金</span><b>'+yen(cash)+'</b></div><div><span>信用卡</span><b>'+yen(card)+'</b></div><div><span>Suica</span><b>'+yen(sui)+'</b></div></div>';
   h+='<div class="bar xb"><button type="button" class="tg addx" data-c="交通卡儲值">＋ 交通卡儲值</button><button type="button" class="tg addx" data-c="餐費">＋ 餐費</button><button type="button" class="tg addx" data-c="咖啡甜點">＋ 咖啡甜點</button><button type="button" class="tg addx" data-c="超商">＋ 超商</button><button type="button" class="tg addx" data-c="購物">＋ 購物</button><button type="button" class="tg addx" data-c="">＋ 其他花費</button></div>';
   if(!EXP.length){return h+'<p class="empty">還沒有紀錄。點店家卡片右邊的 ¥ 開始記帳，臨時的花費按「其他花費」。</p>'}
   var days=[];EXP.forEach(function(x){if(days.indexOf(x.day)<0)days.push(x.day)});
   days.sort(function(a,b){return a===''?1:b===''?-1:a<b?-1:a>b?1:0});
   days.forEach(function(dk){
     var list=EXP.filter(function(x){return x.day===dk}).sort(function(a,b){return a.t-b.t}),sub=0;
-    list.forEach(function(x){sub+=x.amt});
+    list.forEach(function(x){if(x.m!=='suica')sub+=x.amt});
     h+='<h3 class="reg">'+esc(dayLabel(dk))+'<span>'+yen(sub)+'</span></h3>';
     list.forEach(function(x){
       h+='<button type="button" class="xr" data-id="'+esc(x.id)+'"><span>'+esc(x.shop||x.cat||'其他花費')+'<small>'+tfmt(x.t)+(x.note?'　'+esc(x.note):'')+'</small></span><span><b>'+yen(x.amt)+'</b><span class="via">'+MTX[x.m]+'</span></span></button>';
     });
   });
-  return h+'<p class="fn">紀錄只存在這支手機的瀏覽器裡，清除網站資料就會消失。建議不定時按「複製紀錄」備份。</p>';
+  return h+'<p class="fn">Suica 付款只單獨記錄，不計入合計、現金和信用卡。紀錄只存在這支手機的瀏覽器裡，清除網站資料就會消失。建議不定時按「複製紀錄」備份。</p>';
 }
 function copyExp(btn){
   var rows=['日期,記錄時間,店家,金額,付款方式,備註'];
@@ -273,7 +273,7 @@ function copyExp(btn){
 function qpRemove(li){var q=li.querySelector('.qp');if(q)q.remove();if(HIDE&&li.querySelector('.chk:checked'))li.classList.add('gone')}
 function qpAdd(li,name){
   var q=document.createElement('div');q.className='qp';
-  q.innerHTML='記一筆？<button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button>';
+  q.innerHTML='記一筆？<button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button><button type="button" data-m="suica">Suica</button>';
   q.setAttribute('data-n',encodeURIComponent(name));li.appendChild(q);
   setTimeout(function(){if(q.parentNode)qpRemove(li)},6000);
 }
