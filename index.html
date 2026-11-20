@@ -123,7 +123,9 @@ body.lock{overflow:hidden}
 .row1.top{flex-wrap:nowrap;align-items:flex-start}
 .row1.top>.name{flex:1}
 .row1.top>.row1{flex:none}
-.note .hours{margin-right:10px}
+.note.nr{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.note.nr .nt{flex:1;min-width:0}
+.note.nr .hours{flex:none}
 .sp2{align-self:flex-start;background:none;border:0;color:var(--chuo-ink);font:500 14px var(--sans);padding:0;cursor:pointer}
 .sp2[hidden]{display:none}
 .se{margin:0;color:var(--warn);font-size:13px}
@@ -275,7 +277,7 @@ function itemHtml(it,wd,tid){
   if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
   if(ck)r.push(expBtn(it.name));
   h+='<span class="row1" style="gap:12px">'+r.join('')+'</span></div>';
-  if(it.note||it.hours)h+='<p class="note">'+(it.hours?'<span class="hours">'+esc(it.hours)+'</span>':'')+(it.noteUrl&&/^https:\/\//.test(it.noteUrl)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.noteUrl)+'">'+esc(it.note)+'</a>':esc(it.note))+'</p>';
+  if(it.note||it.hours)h+='<p class="note nr"><span class="nt">'+(it.noteUrl&&/^https:\/\//.test(it.noteUrl)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.noteUrl)+'">'+esc(it.note)+'</a>':esc(it.note))+'</span>'+(it.hours?'<span class="hours">'+esc(it.hours)+'</span>':'')+'</p>';
   return h+'</div></li>';
 }
 D.days.forEach(function(d,i){
