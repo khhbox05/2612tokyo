@@ -130,6 +130,9 @@ body.lock{overflow:hidden}
 .se:empty{display:none}
 .sum3{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 12px}
 .sum3 div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column}
+.sum3 .sui{border-style:dashed;border-color:var(--ok)}
+.sum3 .sui span,.sum3 .sui b{color:var(--ok)}
+.xr .via.sui{background:var(--ok-bg);color:var(--ok)}
 .sum3 span{font-size:12px;color:var(--mute)}
 .sum3 b{font:500 16px var(--mono)}
 .xr{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:6px;color:var(--ink);font:inherit;cursor:pointer}
@@ -246,7 +249,7 @@ function openSheet(o){
 function expHtml(){
   var tot=0,cash=0,card=0,sui=0;EXP.forEach(function(x){if(x.m==='suica'){sui+=x.amt;return}tot+=x.amt;if(x.m==='card')card+=x.amt;else cash+=x.amt});
   var h='<div class="dayhead"><div class="pills"><h2>記帳</h2></div><span class="rt"><span class="cost">日圓 JPY</span><button type="button" class="tg" id="cpx">複製紀錄</button></span></div>';
-  h+='<div class="sum3"><div><span>合計</span><b>'+yen(tot)+'</b></div><div><span>現金</span><b>'+yen(cash)+'</b></div><div><span>信用卡</span><b>'+yen(card)+'</b></div><div><span>Suica</span><b>'+yen(sui)+'</b></div></div>';
+  h+='<div class="sum3"><div><span>合計</span><b>'+yen(tot)+'</b></div><div><span>現金</span><b>'+yen(cash)+'</b></div><div><span>信用卡</span><b>'+yen(card)+'</b></div><div class="sui"><span>Suica（不計入）</span><b>'+yen(sui)+'</b></div></div>';
   h+='<div class="bar xb"><button type="button" class="tg addx" data-c="交通卡儲值">＋ 交通卡儲值</button><button type="button" class="tg addx" data-c="餐費">＋ 餐費</button><button type="button" class="tg addx" data-c="咖啡甜點">＋ 咖啡甜點</button><button type="button" class="tg addx" data-c="超商">＋ 超商</button><button type="button" class="tg addx" data-c="購物">＋ 購物</button><button type="button" class="tg addx" data-c="">＋ 其他花費</button></div>';
   if(!EXP.length){return h+'<p class="empty">還沒有紀錄。點店家卡片右邊的 ¥ 開始記帳，臨時的花費按「其他花費」。</p>'}
   var days=[];EXP.forEach(function(x){if(days.indexOf(x.day)<0)days.push(x.day)});
@@ -256,7 +259,7 @@ function expHtml(){
     list.forEach(function(x){if(x.m!=='suica')sub+=x.amt});
     h+='<h3 class="reg">'+esc(dayLabel(dk))+'<span>'+yen(sub)+'</span></h3>';
     list.forEach(function(x){
-      h+='<button type="button" class="xr" data-id="'+esc(x.id)+'"><span>'+esc(x.shop||x.cat||'其他花費')+'<small>'+tfmt(x.t)+(x.note?'　'+esc(x.note):'')+'</small></span><span><b>'+yen(x.amt)+'</b><span class="via">'+MTX[x.m]+'</span></span></button>';
+      h+='<button type="button" class="xr" data-id="'+esc(x.id)+'"><span>'+esc(x.shop||x.cat||'其他花費')+'<small>'+tfmt(x.t)+(x.note?'　'+esc(x.note):'')+'</small></span><span><b>'+yen(x.amt)+'</b><span class="via'+(x.m==='suica'?' sui':'')+'">'+MTX[x.m]+'</span></span></button>';
     });
   });
   return h+'<p class="fn">Suica 付款只單獨記錄，不計入合計、現金和信用卡。紀錄只存在這支手機的瀏覽器裡，清除網站資料就會消失。建議不定時按「複製紀錄」備份。</p>';
