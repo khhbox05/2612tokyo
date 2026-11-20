@@ -112,6 +112,7 @@ body.lock{overflow:hidden}
 .sp{position:relative;width:100%;max-width:720px;background:var(--surface);border:1px solid var(--line);border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
 .sp .st{margin:0;font-size:17px}
 .sl{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mute)}
+.sdt{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:16px var(--sans);width:100%;min-height:40px}
 .sa,.sn{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:16px var(--sans);width:100%}
 .sa{font:500 24px var(--mono)}
 .sa:focus,.sn:focus{outline:2px solid var(--chuo);outline-offset:1px}
@@ -195,6 +196,9 @@ var CURDAY='',MTX={cash:'現金',card:'信用卡'};
 function yen(n){return '¥'+Number(n).toLocaleString()}
 function shopTotal(name){var s=0;EXP.forEach(function(x){if(x.shop===name)s+=x.amt});return s}
 function expBtn(name){var s=shopTotal(name);if(!s)return '';return '<button type="button" class="eb'+(s?' has':'')+'" data-s="'+encodeURIComponent(name)+'" aria-label="記帳：'+esc(name)+'">'+(s?yen(s):'¥')+'</button>'}
+function jstVal(t){try{var o={};new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(t)).forEach(function(x){o[x.type]=x.value});return o.year+'-'+o.month+'-'+o.day+'T'+o.hour+':'+o.minute}catch(e){return ''}}
+function fromJst(v){var m=/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(v||'');return m?Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5])-9*3600000:null}
+function dayKeyOf(t){var v=jstVal(t);if(v.slice(0,4)!=='2026')return '';var k=v.slice(5,7)+'/'+v.slice(8,10);return dayList().some(function(z){return z.key===k})?k:''}
 function tfmt(t){try{var o={};new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tokyo',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(t)).forEach(function(x){o[x.type]=x.value});return o.month+'/'+o.day+' '+o.hour+':'+o.minute}catch(e){return ''}}
 function dayLabel(k){if(!k)return '未指定日期';var z=ids.filter(function(i){return i.key===k})[0];return k.replace(/^0/,'').replace(/\/0/,'/')+(z?' '+z.wd:'')}
 var SH=null,SHST={id:null,shop:'',day:'',m:'cash'};
@@ -203,7 +207,7 @@ function closeSheet(){if(SH)SH.hidden=true;document.body.classList.remove('lock'
 function sheet(){
   if(SH)return SH;
   SH=document.createElement('div');SH.id='sheet';SH.hidden=true;
-  SH.innerHTML='<div class="sbk"></div><form class="sp" autocomplete="off"><h3 class="st"></h3><label class="sl">金額（日圓）<input class="sa" type="text" inputmode="numeric" placeholder="0" aria-label="金額"></label><div class="sm" role="group" aria-label="付款方式"><button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button></div><input class="sn" type="text" aria-label="備註"><button type="button" class="sp2" hidden>＋ 再記一筆（同一家店）</button><p class="se" role="alert"></p><div class="sb"><button type="button" class="sx">取消</button><button type="button" class="sd">刪除</button><button type="submit" class="ss">儲存</button></div></form>';
+  SH.innerHTML='<div class="sbk"></div><form class="sp" autocomplete="off"><h3 class="st"></h3><label class="sl">金額（日圓）<input class="sa" type="text" inputmode="numeric" placeholder="0" aria-label="金額"></label><div class="sm" role="group" aria-label="付款方式"><button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button></div><label class="sl">時間（日本時間）<input class="sdt" type="datetime-local"></label><input class="sn" type="text" aria-label="備註"><button type="button" class="sp2" hidden>＋ 再記一筆（同一家店）</button><p class="se" role="alert"></p><div class="sb"><button type="button" class="sx">取消</button><button type="button" class="sd">刪除</button><button type="submit" class="ss">儲存</button></div></form>';
   document.body.appendChild(SH);
   SH.querySelector('.sbk').onclick=closeSheet;SH.querySelector('.sx').onclick=closeSheet;
   SH.querySelector('.sm').onclick=function(e){var b=e.target.closest('button');if(!b)return;SHST.m=b.getAttribute('data-m');paintM()};
@@ -217,9 +221,9 @@ function sheet(){
     ev.preventDefault();
     var a=parseInt(SH.querySelector('.sa').value.replace(/[^0-9]/g,''),10);
     if(!a||a<1){SH.querySelector('.se').textContent='請輸入金額';return}
-    var note=SH.querySelector('.sn').value.trim();
-    if(SHST.id){EXP.forEach(function(x){if(x.id===SHST.id){x.amt=a;x.m=SHST.m;x.note=note}})}
-    else EXP.push({id:Date.now()+'-'+Math.floor(Math.random()*1000),t:Date.now(),day:SHST.day,shop:SHST.shop,cat:SHST.cat,amt:a,m:SHST.m,note:note});
+    var note=SH.querySelector('.sn').value.trim(),tv=fromJst(SH.querySelector('.sdt').value)||Date.now(),dk=dayKeyOf(tv);
+    if(SHST.id){EXP.forEach(function(x){if(x.id===SHST.id){x.amt=a;x.m=SHST.m;x.note=note;x.t=tv;if(dk)x.day=dk}})}
+    else EXP.push({id:Date.now()+'-'+Math.floor(Math.random()*1000),t:tv,day:dk||SHST.day,shop:SHST.shop,cat:SHST.cat,amt:a,m:SHST.m,note:note});
     saveExp();closeSheet();show(false);
   };
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!SH.hidden)closeSheet()});
@@ -231,6 +235,7 @@ function openSheet(o){
   s.querySelector('.st').textContent=(SHST.shop||SHST.cat||'其他花費')+(ex?'（編輯）':'');
   s.querySelector('.sa').value=ex?String(ex.amt):'';
   s.querySelector('.sn').value=ex?ex.note:'';
+  s.querySelector('.sdt').value=jstVal(ex?ex.t:Date.now());
   s.querySelector('.sn').placeholder=(SHST.shop||SHST.cat)?'備註（選填）':'用途，例如：自動販賣機';
   s.querySelector('.se').textContent='';
   s.querySelector('.sd').hidden=!ex;
