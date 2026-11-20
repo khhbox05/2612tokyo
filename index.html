@@ -120,10 +120,6 @@ body.lock{overflow:hidden}
 .sb .ss{background:var(--chuo);border-color:var(--chuo);color:#fff}
 .sb .sd{color:var(--warn)}
 .sb [hidden]{display:none}
-.row1.top{flex-wrap:nowrap;align-items:flex-start}
-.row1.top>.name{flex:1}
-.rg{flex:none;flex-direction:column;align-items:flex-end;gap:6px!important}
-.rg:empty{display:none}
 .sp2{align-self:flex-start;background:none;border:0;color:var(--chuo-ink);font:500 14px var(--sans);padding:0;cursor:pointer}
 .sp2[hidden]{display:none}
 .se{margin:0;color:var(--warn);font-size:13px}
@@ -269,12 +265,12 @@ function itemHtml(it,wd,tid){
   var ck=!it.via&&it.name.indexOf('宿泊')!==0,key=tid+'|'+it.name,done=ck&&!!DONE[key];
   var closed=!!wd&&!it.via&&closedOn(it.note,wd);
   var cls=(it.name.indexOf('宿泊')===0?'stay':(it.via?'move':''))+(closed?' closed':'')+(done?' done':'');
-  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card"><div class="row1 top"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(closed?'<span class="via off">公休</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
+  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card"><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(closed?'<span class="via off">公休</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+'</span>';
   var r=[];if(it.hours)r.push('<span class="hours">'+esc(it.hours)+'</span>');
   if(it.jpy&&it.jpy!=='－')r.push('<span class="yen">¥'+esc(it.jpy)+'</span>');
   if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
   if(ck)r.push(expBtn(it.name));
-  h+='<span class="row1 rg" style="gap:12px">'+r.join('')+'</span></div>';
+  h+='<span class="row1" style="gap:12px">'+r.join('')+'</span></div>';
   if(it.note)h+='<p class="note">'+(it.noteUrl&&/^https:\/\//.test(it.noteUrl)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.noteUrl)+'">'+esc(it.note)+'</a>':esc(it.note))+'</p>';
   return h+'</div></li>';
 }

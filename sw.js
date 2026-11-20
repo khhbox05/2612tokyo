@@ -1,5 +1,5 @@
 // Offline support: pages are cached on first visit and served when offline.
-const CACHE = 'tokyo2612-v26';
+const CACHE = 'tokyo2612-v27';
 const PRECACHE = ['./', 'index.html', 'manifest.json', 'apple-touch-icon.png', 'favicon.png'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
