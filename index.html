@@ -120,6 +120,8 @@ body.lock{overflow:hidden}
 .sb .ss{background:var(--chuo);border-color:var(--chuo);color:#fff}
 .sb .sd{color:var(--warn)}
 .sb [hidden]{display:none}
+.sp2{align-self:flex-start;background:none;border:0;color:var(--chuo-ink);font:500 14px var(--sans);padding:0;cursor:pointer}
+.sp2[hidden]{display:none}
 .se{margin:0;color:var(--warn);font-size:13px}
 .se:empty{display:none}
 .sum3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}
@@ -197,11 +199,15 @@ function closeSheet(){if(SH)SH.hidden=true;document.body.classList.remove('lock'
 function sheet(){
   if(SH)return SH;
   SH=document.createElement('div');SH.id='sheet';SH.hidden=true;
-  SH.innerHTML='<div class="sbk"></div><form class="sp" autocomplete="off"><h3 class="st"></h3><label class="sl">金額（日圓）<input class="sa" type="text" inputmode="numeric" placeholder="0" aria-label="金額"></label><div class="sm" role="group" aria-label="付款方式"><button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button></div><input class="sn" type="text" aria-label="備註"><p class="se" role="alert"></p><div class="sb"><button type="button" class="sx">取消</button><button type="button" class="sd">刪除</button><button type="submit" class="ss">儲存</button></div></form>';
+  SH.innerHTML='<div class="sbk"></div><form class="sp" autocomplete="off"><h3 class="st"></h3><label class="sl">金額（日圓）<input class="sa" type="text" inputmode="numeric" placeholder="0" aria-label="金額"></label><div class="sm" role="group" aria-label="付款方式"><button type="button" data-m="cash">現金</button><button type="button" data-m="card">信用卡</button></div><input class="sn" type="text" aria-label="備註"><button type="button" class="sp2" hidden>＋ 再記一筆（同一家店）</button><p class="se" role="alert"></p><div class="sb"><button type="button" class="sx">取消</button><button type="button" class="sd">刪除</button><button type="submit" class="ss">儲存</button></div></form>';
   document.body.appendChild(SH);
   SH.querySelector('.sbk').onclick=closeSheet;SH.querySelector('.sx').onclick=closeSheet;
   SH.querySelector('.sm').onclick=function(e){var b=e.target.closest('button');if(!b)return;SHST.m=b.getAttribute('data-m');paintM()};
   SH.querySelector('.sd').onclick=function(){if(!SHST.id)return;EXP=EXP.filter(function(x){return x.id!==SHST.id});saveExp();closeSheet();show(false)};
+  SH.querySelector('.sp2').onclick=function(){
+    SHST.id=null;SH.querySelector('.st').textContent=SHST.shop;SH.querySelector('.sa').value='';SH.querySelector('.sn').value='';
+    SH.querySelector('.sd').hidden=true;SH.querySelector('.sp2').hidden=true;SH.querySelector('.se').textContent='';SH.querySelector('.sa').focus();
+  };
   SH.querySelector('.sa').addEventListener('input',function(){SH.querySelector('.se').textContent=''});
   SH.querySelector('form').onsubmit=function(ev){
     ev.preventDefault();
@@ -224,6 +230,7 @@ function openSheet(o){
   s.querySelector('.sn').placeholder=SHST.shop?'備註（選填）':'用途，例如：自動販賣機';
   s.querySelector('.se').textContent='';
   s.querySelector('.sd').hidden=!ex;
+  s.querySelector('.sp2').hidden=!(ex&&SHST.shop);
   paintM();s.hidden=false;document.body.classList.add('lock');
   setTimeout(function(){s.querySelector('.sa').focus()},50);
 }
@@ -318,7 +325,7 @@ view.addEventListener('change',function(e){
 window.addEventListener('hashchange',function(){if(!show(true))window.scrollTo(0,0)});
 show(true);
 view.addEventListener('click',function(e){
-  var eb=e.target.closest('.eb');if(eb){openSheet({shop:decodeURIComponent(eb.getAttribute('data-s')),day:CURDAY});return}
+  var eb=e.target.closest('.eb');if(eb){var sn=decodeURIComponent(eb.getAttribute('data-s')),last=EXP.filter(function(x){return x.shop===sn}).sort(function(a,b){return b.t-a.t})[0];openSheet(last?{id:last.id}:{shop:sn,day:CURDAY});return}
   var xr=e.target.closest('.xr');if(xr){openSheet({id:xr.getAttribute('data-id')});return}
   if(e.target.closest('#addx')){openSheet({shop:'',day:todayKey});return}
   if(e.target.closest('#cpx')){copyExp(e.target.closest('#cpx'));return}
