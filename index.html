@@ -241,7 +241,7 @@ function expHtml(){
   var tot=0,cash=0,card=0;EXP.forEach(function(x){tot+=x.amt;if(x.m==='card')card+=x.amt;else cash+=x.amt});
   var h='<div class="dayhead"><div class="pills"><h2>記帳</h2></div><span class="rt"><span class="cost">日圓 JPY</span><button type="button" class="tg" id="cpx">複製紀錄</button></span></div>';
   h+='<div class="sum3"><div><span>合計</span><b>'+yen(tot)+'</b></div><div><span>現金</span><b>'+yen(cash)+'</b></div><div><span>信用卡</span><b>'+yen(card)+'</b></div></div>';
-  h+='<div class="bar xb"><button type="button" class="tg addx" data-c="交通卡儲值">＋ 交通卡儲值</button><button type="button" class="tg addx" data-c="餐費">＋ 餐費</button><button type="button" class="tg addx" data-c="超商">＋ 超商</button><button type="button" class="tg addx" data-c="飲品">＋ 飲品</button><button type="button" class="tg addx" data-c="點心">＋ 點心</button><button type="button" class="tg addx" data-c="購物">＋ 購物</button><button type="button" class="tg addx" data-c="">＋ 其他花費</button></div>';
+  h+='<div class="bar xb"><button type="button" class="tg addx" data-c="交通卡儲值">＋ 交通卡儲值</button><button type="button" class="tg addx" data-c="餐費">＋ 餐費</button><button type="button" class="tg addx" data-c="超商">＋ 超商</button><button type="button" class="tg addx" data-c="咖啡甜點">＋ 咖啡甜點</button><button type="button" class="tg addx" data-c="購物">＋ 購物</button><button type="button" class="tg addx" data-c="">＋ 其他花費</button></div>';
   if(!EXP.length){return h+'<p class="empty">還沒有紀錄。點店家卡片右邊的 ¥ 開始記帳，臨時的花費按「其他花費」。</p>'}
   var days=[];EXP.forEach(function(x){if(days.indexOf(x.day)<0)days.push(x.day)});
   days.sort(function(a,b){return a===''?1:b===''?-1:a<b?-1:a>b?1:0});
