@@ -122,6 +122,7 @@ body.lock{overflow:hidden}
 .sb .ss{background:var(--chuo);border-color:var(--chuo);color:#fff}
 .sb .sd{color:var(--warn)}
 .sb [hidden]{display:none}
+.bar.xb{flex-wrap:wrap}
 .sp2{align-self:flex-start;background:none;border:0;color:var(--chuo-ink);font:500 14px var(--sans);padding:0;cursor:pointer}
 .sp2[hidden]{display:none}
 .se{margin:0;color:var(--warn);font-size:13px}
@@ -217,7 +218,7 @@ function sheet(){
     if(!a||a<1){SH.querySelector('.se').textContent='請輸入金額';return}
     var note=SH.querySelector('.sn').value.trim();
     if(SHST.id){EXP.forEach(function(x){if(x.id===SHST.id){x.amt=a;x.m=SHST.m;x.note=note}})}
-    else EXP.push({id:Date.now()+'-'+Math.floor(Math.random()*1000),t:Date.now(),day:SHST.day,shop:SHST.shop,amt:a,m:SHST.m,note:note});
+    else EXP.push({id:Date.now()+'-'+Math.floor(Math.random()*1000),t:Date.now(),day:SHST.day,shop:SHST.shop,cat:SHST.cat,amt:a,m:SHST.m,note:note});
     saveExp();closeSheet();show(false);
   };
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!SH.hidden)closeSheet()});
@@ -225,11 +226,11 @@ function sheet(){
 }
 function openSheet(o){
   var s=sheet(),ex=o.id&&EXP.filter(function(x){return x.id===o.id})[0]||null;
-  SHST={id:ex?ex.id:null,shop:ex?ex.shop:(o.shop||''),day:ex?ex.day:(o.day||''),m:ex?ex.m:(o.m||'cash')};
-  s.querySelector('.st').textContent=(SHST.shop||'其他花費')+(ex?'（編輯）':'');
+  SHST={id:ex?ex.id:null,shop:ex?ex.shop:(o.shop||''),cat:ex?(ex.cat||''):(o.cat||''),day:ex?ex.day:(o.day||''),m:ex?ex.m:(o.m||'cash')};
+  s.querySelector('.st').textContent=(SHST.shop||SHST.cat||'其他花費')+(ex?'（編輯）':'');
   s.querySelector('.sa').value=ex?String(ex.amt):'';
   s.querySelector('.sn').value=ex?ex.note:'';
-  s.querySelector('.sn').placeholder=SHST.shop?'備註（選填）':'用途，例如：自動販賣機';
+  s.querySelector('.sn').placeholder=(SHST.shop||SHST.cat)?'備註（選填）':'用途，例如：自動販賣機';
   s.querySelector('.se').textContent='';
   s.querySelector('.sd').hidden=!ex;
   s.querySelector('.sp2').hidden=!(ex&&SHST.shop);
@@ -240,7 +241,7 @@ function expHtml(){
   var tot=0,cash=0,card=0;EXP.forEach(function(x){tot+=x.amt;if(x.m==='card')card+=x.amt;else cash+=x.amt});
   var h='<div class="dayhead"><div class="pills"><h2>記帳</h2></div><span class="cost">日圓 JPY</span></div>';
   h+='<div class="sum3"><div><span>合計</span><b>'+yen(tot)+'</b></div><div><span>現金</span><b>'+yen(cash)+'</b></div><div><span>信用卡</span><b>'+yen(card)+'</b></div></div>';
-  h+='<div class="bar"><button type="button" class="tg" id="addx">＋ 其他花費</button><button type="button" class="tg" id="cpx">複製紀錄</button></div>';
+  h+='<div class="bar xb"><button type="button" class="tg addx" data-c="">＋ 其他花費</button><button type="button" class="tg addx" data-c="交通卡儲值">＋ 交通卡儲值</button><button type="button" class="tg addx" data-c="餐費">＋ 餐費</button><button type="button" class="tg" id="cpx">複製紀錄</button></div>';
   if(!EXP.length){return h+'<p class="empty">還沒有紀錄。點店家卡片右邊的 ¥ 開始記帳，臨時的花費按「其他花費」。</p>'}
   var days=[];EXP.forEach(function(x){if(days.indexOf(x.day)<0)days.push(x.day)});
   days.sort(function(a,b){return a===''?1:b===''?-1:a<b?-1:a>b?1:0});
@@ -249,7 +250,7 @@ function expHtml(){
     list.forEach(function(x){sub+=x.amt});
     h+='<h3 class="reg">'+esc(dayLabel(dk))+'<span>'+yen(sub)+'</span></h3>';
     list.forEach(function(x){
-      h+='<button type="button" class="xr" data-id="'+esc(x.id)+'"><span>'+esc(x.shop||'其他花費')+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</span><span><b>'+yen(x.amt)+'</b><span class="via">'+MTX[x.m]+'</span></span></button>';
+      h+='<button type="button" class="xr" data-id="'+esc(x.id)+'"><span>'+esc(x.shop||x.cat||'其他花費')+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</span><span><b>'+yen(x.amt)+'</b><span class="via">'+MTX[x.m]+'</span></span></button>';
     });
   });
   return h+'<p class="fn">紀錄只存在這支手機的瀏覽器裡，清除網站資料就會消失。建議不定時按「複製紀錄」備份。</p>';
@@ -257,7 +258,7 @@ function expHtml(){
 function copyExp(btn){
   var rows=['日期,店家,金額,付款方式,備註'];
   EXP.slice().sort(function(a,b){return a.t-b.t}).forEach(function(x){
-    rows.push([x.day,x.shop||'其他花費',x.amt,MTX[x.m],x.note].map(function(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(','));
+    rows.push([x.day,x.shop||x.cat||'其他花費',x.amt,MTX[x.m],x.note].map(function(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(','));
   });
   var txt=rows.join('\n'),done=function(){btn.textContent='已複製';setTimeout(function(){btn.textContent='複製紀錄'},1500)};
   function fb(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){}document.body.removeChild(ta)}
@@ -339,7 +340,7 @@ view.addEventListener('click',function(e){
   var qb=e.target.closest('.qp button');if(qb){var q=qb.parentNode,qli=q.closest('li');openSheet({shop:decodeURIComponent(q.getAttribute('data-n')),day:CURDAY,m:qb.getAttribute('data-m')});qpRemove(qli);return}
   var eb=e.target.closest('.eb');if(eb){var sn=decodeURIComponent(eb.getAttribute('data-s')),last=EXP.filter(function(x){return x.shop===sn}).sort(function(a,b){return b.t-a.t})[0];openSheet(last?{id:last.id}:{shop:sn,day:CURDAY});return}
   var xr=e.target.closest('.xr');if(xr){openSheet({id:xr.getAttribute('data-id')});return}
-  if(e.target.closest('#addx')){openSheet({shop:'',day:todayKey});return}
+  var ax=e.target.closest('.addx');if(ax){openSheet({shop:'',cat:ax.getAttribute('data-c')||'',day:todayKey});return}
   if(e.target.closest('#cpx')){copyExp(e.target.closest('#cpx'));return}
   if(e.target.closest('.tg')){HIDE=!HIDE;try{localStorage.setItem('hide2612',HIDE?'1':'0')}catch(x){}show(false);return}
 });
