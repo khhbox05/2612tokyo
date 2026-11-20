@@ -77,7 +77,7 @@ a.map:focus-visible{outline:2px solid var(--chuo);outline-offset:2px}
 .pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .chk{flex:none;width:18px;height:18px;margin:0 8px 0 0;vertical-align:-3px;touch-action:manipulation;accent-color:var(--chuo);cursor:pointer}
 .done .card{opacity:.6}
-.done .name a,.done .name{text-decoration:line-through;text-decoration-color:var(--mute)}
+.done .name a.map,.done .nm{text-decoration:line-through;text-decoration-color:var(--mute)}
 .pill.prog{background:var(--chuo-soft);color:var(--chuo);font-family:var(--mono)}
 h3.reg{display:flex;align-items:baseline;gap:8px;font-size:15px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 h3.reg span{font:400 12px var(--mono);color:var(--mute)}
@@ -281,7 +281,7 @@ function itemHtml(it,wd,tid){
   var ck=it.name.indexOf('宿泊')!==0,key=tid+'|'+it.name,done=ck&&!!DONE[key];
   var closed=!!wd&&!it.via&&closedOn(it.note,wd);
   var cls=(it.name.indexOf('宿泊')===0?'stay':(it.via?'move':''))+(closed?' closed':'')+(done?' done':'');
-  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card"><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(closed?'<span class="via off">公休</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':esc(it.name))+(ck&&!it.via?expBtn(it.name):'')+'</span>';
+  var h='<li class="'+cls+(done&&HIDE?' gone':'')+'"><div class="card"><div class="row1"><span class="name">'+(ck?'<input type="checkbox" class="chk" data-k="'+encodeURIComponent(key)+'"'+(done?' checked':'')+' aria-label="已去過">':'')+(it.time?'<span class="t">'+esc(it.time)+'</span>':'')+(closed?'<span class="via off">公休</span>':'')+(it.via?'<span class="via">'+esc(it.via)+'</span>':'')+(it.url&&/^https:\/\//.test(it.url)?'<a class="map" target="_blank" rel="noopener" href="'+esc(it.url)+'">'+esc(it.name)+'</a>':'<span class="nm">'+esc(it.name)+'</span>')+(ck&&!it.via?expBtn(it.name):'')+'</span>';
   var r=[];if(it.hours)r.push('<span class="hours">'+esc(it.hours)+'</span>');
   if(it.jpy&&it.jpy!=='－')r.push('<span class="yen">¥'+esc(it.jpy)+'</span>');
   if(it.ntd)r.push('<span class="yen">NT$'+esc(it.ntd)+'</span>');
