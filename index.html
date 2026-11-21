@@ -251,7 +251,7 @@ function expHtml(){
   if(EXP.length&&new Date(lb).toDateString()!==new Date().toDateString())h+='<p class="fn" id="bkn">'+(lb?'今天還沒備份':'還沒備份過')+'，記帳紀錄只存在這支手機裡。按右上「備份」存成檔案。</p>';
   h+='<div class="sum3"><div><span>合計</span><b>'+yen(tot)+'</b></div><div><span>現金</span><b>'+yen(cash)+'</b></div><div><span>信用卡</span><b>'+yen(card)+'</b></div></div>';
   h+='<div class="bar xb"><button type="button" class="tg addx" data-c="儲值">＋ 儲值</button><button type="button" class="tg addx" data-c="餐費">＋ 餐費</button><button type="button" class="tg addx" data-c="咖啡甜點">＋ 咖啡甜點</button><button type="button" class="tg addx" data-c="超商">＋ 超商</button><button type="button" class="tg addx" data-c="購物">＋ 購物</button><button type="button" class="tg addx" data-c="">＋ 其他</button></div>';
-  if(!EXP.length){return h+'<p class="empty">還沒有紀錄。勾選店家後點「現金」或「信用卡」開始記帳，臨時的花費按上面的分類。</p>'}
+  if(!EXP.length){return h+'<p class="empty">還沒有紀錄。勾選店家後點「現金」或「信用卡」開始記帳，臨時的花費按上面的分類。</p>'+planHtml()}
   var days=[];EXP.forEach(function(x){if(days.indexOf(x.day)<0)days.push(x.day)});
   days.sort(function(a,b){return a===''?1:b===''?-1:a<b?-1:a>b?1:0});
   days.forEach(function(dk){
@@ -262,7 +262,11 @@ function expHtml(){
       h+='<button type="button" class="xr" data-id="'+esc(x.id)+'"><span>'+esc(x.shop||x.cat||'其他')+'<small>'+tfmt(x.t)+(x.note?'　'+esc(x.note):'')+'</small></span><span><b>'+yen(x.amt)+'</b><span class="via">'+MTX[x.m]+'</span></span></button>';
     });
   });
-  return h+'<p class="fn">紀錄只存在這支手機的瀏覽器裡，清除網站資料就會消失。建議不定時按「備份」存成檔案，換手機或資料不見時用「匯入」還原。</p>';
+  return h+planHtml()+'<p class="fn">紀錄只存在這支手機的瀏覽器裡，清除網站資料就會消失。建議不定時按「備份」存成檔案，換手機或資料不見時用「匯入」還原。</p>';
+}
+function planHtml(){
+  var stay=0,other=0;D.days.forEach(function(x){x.items.forEach(function(it){if(it.name.indexOf('宿泊')===0)stay+=num(it.jpy);else other+=num(it.jpy)})});
+  return '<h3 class="reg">行程預估<span>不列入上方合計</span></h3><div class="total"><div><span>住宿</span><b>¥'+stay.toLocaleString()+'</b></div><div><span>交通與門票</span><b>¥'+other.toLocaleString()+'</b></div><div class="sum"><span>整趟旅程 JPY 總計</span><b>¥'+esc(D.total)+'</b></div></div>';
 }
 function backupExp(btn){
   var data=JSON.stringify({app:'tokyo2612',v:1,saved:new Date().toISOString(),exp:EXP,chk:DONE}),nm='tokyo-backup-'+new Date().toISOString().slice(0,10)+'.json',lab=btn.textContent;
@@ -326,10 +330,6 @@ function show(auto){
   if(t.type==='day'){
     var cost=0;d.items.forEach(function(it){if(it.name.indexOf('宿泊')!==0)cost+=num(it.jpy)});
     h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.date)+'</h2>'+(t.key===todayKey?'<span class="pill today">今天</span>':'')+'</div><span class="rt">'+(cost?'<span class="cost">交通與門票 ¥'+cost.toLocaleString()+'</span>':'')+tgBtn()+'</span></div>'+bar(false)+'<ol>'+d.items.map(function(it){return itemHtml(it,t.wd,t.id)}).join('')+'</ol>';
-    if(t===ids[D.days.length-1]){
-      var stay=0,other=0;D.days.forEach(function(x){x.items.forEach(function(it){if(it.name.indexOf('宿泊')===0)stay+=num(it.jpy);else other+=num(it.jpy)})});
-      h+='<div class="total"><div><span>住宿</span><b>¥'+stay.toLocaleString()+'</b></div><div><span>交通與門票</span><b>¥'+other.toLocaleString()+'</b></div><div class="sum"><span>整趟旅程 JPY 總計</span><b>¥'+esc(D.total)+'</b></div></div>';
-    }
   }else if(t.type==='ref'){
     h+='<div class="dayhead"><div class="pills"><h2>'+esc(d.title)+'</h2></div><span class="cost">備選清單 · '+d.items.length+' 項</span></div>';
     h+=bar(true)+'<ol>'+d.items.filter(function(it){var w=refWd();return !(w&&!it.via&&closedOn(it.note,w))}).map(function(it){return itemHtml(it,null,t.id)}).join('')+'</ol>';
