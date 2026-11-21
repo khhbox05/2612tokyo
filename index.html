@@ -25,7 +25,8 @@ h1{font-size:clamp(26px,6vw,36px);line-height:1.2;margin:6px 0 4px;text-wrap:bal
 .sub{color:var(--mute);margin:0;font-size:14px}
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
 .nv{display:flex;align-items:center;max-width:720px;margin:0 auto}
-#tabx{flex:none;padding-block:8px}
+#tabx{flex:none;display:flex;align-self:stretch;padding-block:8px}
+#tabx .tab{display:flex;align-items:center;justify-content:center;border-style:solid}
 .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding-block:8px}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:none;border:0;background:none;color:var(--mute);font:500 14px var(--sans);padding:6px 12px;border-radius:6px;cursor:pointer;text-align:center;line-height:1.3}
