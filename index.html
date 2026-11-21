@@ -81,6 +81,9 @@ a.map:focus-visible{outline:2px solid var(--chuo);outline-offset:2px}
 .pill.prog{background:var(--chuo-soft);color:var(--chuo);font-family:var(--mono)}
 h3.reg{display:flex;align-items:baseline;gap:8px;font-size:15px;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 h3.reg span{font:400 12px var(--mono);color:var(--mute)}
+h3.cl{cursor:pointer;-webkit-user-select:none;user-select:none}
+h3.cl::before{content:"▾";color:var(--mute);font-size:12px}
+h3.cl.off::before{content:"▸"}
 .refgrid{display:grid;gap:8px}
 .refgrid .card{display:flex;flex-direction:column}
 
@@ -189,6 +192,7 @@ function closedOn(note,wd){
 var DONE={};
 try{DONE=JSON.parse(localStorage.getItem('chk2612')||'{}')||{}}catch(e){DONE={}}
 function saveDone(){try{localStorage.setItem('chk2612',JSON.stringify(DONE))}catch(e){}}
+var COL={};try{COL=JSON.parse(localStorage.getItem('col2612')||'{}')||{}}catch(e){COL={}}
 var EXP=[];
 try{EXP=JSON.parse(localStorage.getItem('exp2612')||'[]')||[]}catch(e){EXP=[]}
 EXP.forEach(function(x){if(x.cat==='交通卡儲值')x.cat='儲值';if(x.m==='suica')x.m='cash'});
@@ -257,10 +261,12 @@ function expHtml(){
   days.forEach(function(dk){
     var list=EXP.filter(function(x){return x.day===dk}).sort(function(a,b){return a.t-b.t}),sub=0;
     list.forEach(function(x){sub+=x.amt});
-    h+='<h3 class="reg">'+esc(dayLabel(dk))+'<span>'+yen(sub)+'</span></h3>';
+    var off=COL[dk]===1;
+    h+='<h3 class="reg cl'+(off?' off':'')+'" role="button" tabindex="0" aria-expanded="'+!off+'" data-d="'+esc(dk)+'">'+esc(dayLabel(dk))+'<span>'+yen(sub)+'</span></h3><div class="dg"'+(off?' hidden':'')+'>';
     list.forEach(function(x){
       h+='<button type="button" class="xr" data-id="'+esc(x.id)+'"><span>'+esc(x.shop||x.cat||'其他')+'<small>'+tfmt(x.t)+(x.note?'　'+esc(x.note):'')+'</small></span><span><b>'+yen(x.amt)+'</b><span class="via">'+MTX[x.m]+'</span></span></button>';
     });
+    h+='</div>';
   });
   return h+planHtml()+'<p class="fn">紀錄只存在這支手機的瀏覽器裡，清除網站資料就會消失。建議不定時按「備份」存成檔案，換手機或資料不見時用「匯入」還原。</p>';
 }
@@ -363,6 +369,7 @@ view.addEventListener('click',function(e){
   var eb=e.target.closest('.eb');if(eb){var sn=decodeURIComponent(eb.getAttribute('data-s')),last=EXP.filter(function(x){return x.shop===sn}).sort(function(a,b){return b.t-a.t})[0];openSheet(last?{id:last.id}:{shop:sn,day:CURDAY});return}
   var xr=e.target.closest('.xr');if(xr){openSheet({id:xr.getAttribute('data-id')});return}
   var ax=e.target.closest('.addx');if(ax){openSheet({shop:'',cat:ax.getAttribute('data-c')||'',day:todayKey});return}
+  var ch=e.target.closest('h3.cl');if(ch){var dk0=ch.getAttribute('data-d'),nx=ch.nextElementSibling,o=!nx.hidden;nx.hidden=o;ch.classList.toggle('off',o);ch.setAttribute('aria-expanded',!o);if(o)COL[dk0]=1;else delete COL[dk0];try{localStorage.setItem('col2612',JSON.stringify(COL))}catch(x){}return}
   if(e.target.closest('#bkx')){backupExp(e.target.closest('#bkx'));return}
   if(e.target.closest('#imx')){var imf=document.getElementById('imf');if(imf)imf.click();return}
   if(e.target.closest('.tg')){HIDE=!HIDE;try{localStorage.setItem('hide2612',HIDE?'1':'0')}catch(x){}show(false);return}
